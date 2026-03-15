@@ -1,0 +1,36 @@
+export interface ZpubStep {
+  id: number;
+  title: string;
+  description: string;
+  color: string;
+}
+
+export interface DerivationLevel {
+  depth: number;
+  path: string;
+  name: string;
+  index: number;
+  hardened: boolean;
+  privKey: Uint8Array;
+  chainCode: Uint8Array;
+}
+
+export interface SerializedKey {
+  version: Uint8Array;
+  depth: number;
+  fingerprint: Uint8Array;
+  childIndex: number;
+  chainCode: Uint8Array;
+  publicKey: Uint8Array;
+  raw78: Uint8Array;
+  checksum: Uint8Array;
+  full82: Uint8Array;
+  encoded: string;
+}
+
+export interface VersionInfo {
+  prefix: string;
+  versionHex: string;
+  addressType: string;
+  bytes: Uint8Array;
+}
