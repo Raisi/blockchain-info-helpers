@@ -1,6 +1,7 @@
 # dependencies
 /node_modules
 /generated_artifacts
+/concept-images
 /.claude/**/*
 /.pnp
 .pnp.*
@@ -38,7 +39,7 @@ yarn-error.log*
 .vercel
 
 # typescript
-*.tsbuildinfo
+*.tsbuildinfoac
 next-env.d.ts
 
 # IDE

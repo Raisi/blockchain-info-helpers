@@ -6,8 +6,8 @@ export default function ZpubPage() {
   return (
     <PageShell>
       <VisualizationShell
-        title="zpub Key Generation"
-        description="Vom Mnemonic zum Extended Public Key — 5 Schritte der Ableitung interaktiv erklärt"
+        title="Was ist ein zpub (Extended Public Key)?"
+        description="Die 5 Schritte vom Seed zum zpub — dem Schlüssel, der deine Adressen erzeugt"
         topic="zpub"
       >
         <ZpubVisualizer />

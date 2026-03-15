@@ -6,8 +6,8 @@ export default function BipVisualizerPage() {
   return (
     <PageShell>
       <VisualizationShell
-        title="BIP Derivation Pipeline"
-        description="BIP32/39/44/85 — Vom Mnemonic zum Wallet-Schlüssel, Schritt für Schritt"
+        title="Vom Seed zum Wallet"
+        description="Wie aus einer Seed Phrase alle Schlüssel und Adressen abgeleitet werden (BIP-32/44)"
         topic="bip-visualizer"
       >
         <BipPipelineVisualizer />

@@ -2,7 +2,7 @@
 
 import { useRef, useEffect } from "react";
 import { gsap } from "@/lib/gsap";
-import { TOPICS, CATEGORY_LABELS } from "@/lib/constants";
+import { TOPICS, CATEGORY_LABELS, CATEGORY_ORDER } from "@/lib/constants";
 import { Card } from "@/components/ui";
 import { PageShell } from "@/components/layout";
 
@@ -32,8 +32,6 @@ export default function Home() {
     return () => ctx.revert();
   }, []);
 
-  const categories = [...new Set(TOPICS.map((t) => t.category))];
-
   return (
     <PageShell>
       <div ref={heroRef}>
@@ -43,7 +41,7 @@ export default function Home() {
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border-subtle bg-bg-card px-4 py-1.5">
               <span className="h-2 w-2 rounded-full bg-accent-success animate-pulse" />
               <span className="font-code text-xs text-text-secondary">
-                Interaktiv & Open Source
+                Open Source & Interaktiv
               </span>
             </div>
           </div>
@@ -61,24 +59,35 @@ export default function Home() {
             className="mx-auto mb-10 max-w-2xl text-lg text-text-secondary sm:text-xl"
             data-hero-animate
           >
-            Verstehe Blockchain-Technologie durch interaktive Visualisierungen.
-            Von Seed Phrases bis zur Key Derivation — Schritt für Schritt
-            erklärt.
+            Open-Source-Lernplattform — Verstehe die Technologie hinter Bitcoin
+            &amp; Blockchain Schritt für Schritt durch interaktive
+            Visualisierungen.
           </p>
         </section>
 
         {/* Topics Grid */}
-        {categories.map((category) => {
+        {CATEGORY_ORDER.map((category) => {
           const topicsInCategory = TOPICS.filter(
             (t) => t.category === category
           ).sort((a, b) => a.order - b.order);
 
+          if (topicsInCategory.length === 0) return null;
+
+          const label = CATEGORY_LABELS[category];
+
           return (
             <section key={category} className="mb-12">
               <div className="mb-6 flex items-center gap-3" data-animate>
-                <h2 className="font-display text-xl font-semibold text-text-primary">
-                  {CATEGORY_LABELS[category] ?? category}
-                </h2>
+                <div>
+                  <h2 className="font-display text-xl font-semibold text-text-primary">
+                    {label?.title ?? category}
+                  </h2>
+                  {label?.subtitle && (
+                    <p className="text-sm text-text-muted">
+                      {label.subtitle}
+                    </p>
+                  )}
+                </div>
                 <div className="h-px flex-1 bg-border-subtle" />
               </div>
 
@@ -90,6 +99,7 @@ export default function Home() {
                     description={topic.description}
                     icon={topic.icon}
                     href={`/${topic.slug}`}
+                    available={topic.available === true}
                   />
                 ))}
               </div>

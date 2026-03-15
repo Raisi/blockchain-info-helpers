@@ -6,8 +6,8 @@ export default function BlockchainStructurePage() {
   return (
     <PageShell>
       <VisualizationShell
-        title="Blockchain Struktur"
-        description="Wie Blöcke eine unveränderliche Kette bilden — baue, mine und manipuliere eine Blockchain"
+        title="Wie funktioniert eine Blockchain?"
+        description="Blockaufbau interaktiv — baue, mine und manipuliere eine Blockchain"
         topic="blockchain-structure"
       >
         <BlockchainVisualizer />

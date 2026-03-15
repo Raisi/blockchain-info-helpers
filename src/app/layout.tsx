@@ -22,7 +22,7 @@ const firaCode = Fira_Code({
 export const metadata: Metadata = {
   title: "Blockchain Visualizer",
   description:
-    "Interaktive Visualisierungen zu Blockchain- und Bitcoin-Technologie",
+    "Open-Source-Lernplattform: Bitcoin- und Blockchain-Technologie interaktiv verstehen — von Hashing bis zur Schlüsselableitung.",
 };
 
 export default function RootLayout({

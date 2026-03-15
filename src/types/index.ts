@@ -12,6 +12,7 @@ export interface Topic {
   icon: string;
   category: TopicCategory;
   order: number;
+  available?: boolean;
 }
 
 export interface VisualizationShellProps {

@@ -6,8 +6,8 @@ export default function HashingPage() {
   return (
     <PageShell>
       <VisualizationShell
-        title="Hashing & SHA-256"
-        description="Von Daten zum digitalen Fingerabdruck — interaktiv erkunden, wie SHA-256 funktioniert"
+        title="Was ist Hashing?"
+        description="Wie SHA-256 aus beliebigen Daten einen einzigartigen Fingerabdruck erzeugt"
         topic="hashing"
       >
         <HashingVisualizer />

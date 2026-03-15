@@ -55,7 +55,7 @@ export default function HashingVisualizer() {
       </div>
 
       {/* Tab Description */}
-      <p className="font-code text-xs text-text-muted">
+      <p className="text-sm leading-relaxed text-text-secondary">
         {HASH_TABS.find((t) => t.id === activeTab)?.description}
       </p>
 

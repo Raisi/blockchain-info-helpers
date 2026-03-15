@@ -4,16 +4,32 @@ import { useRef, useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { gsap } from "@/lib/gsap";
-import { TOPICS, CATEGORY_LABELS } from "@/lib/constants";
+import { TOPICS, CATEGORY_LABELS, CATEGORY_ORDER } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import type { Topic, TopicCategory } from "@/types";
 
 const ICON_EMOJI: Record<string, string> = {
   hash: "#",
-  blocks: "⛓",
-  key: "🔑",
-  "git-branch": "🌿",
-  shield: "🛡",
+  blocks: "\u26D3",
+  key: "\uD83D\uDD11",
+  "git-branch": "\uD83C\uDF3F",
+  shield: "\uD83D\uDEE1",
+  curve: "\u223E",
+  tree: "\uD83C\uDF33",
+  pen: "\u270D",
+  address: "\uD83D\uDCE8",
+  seedling: "\uD83C\uDF31",
+  coins: "\uD83E\uDE99",
+  build: "\uD83D\uDD27",
+  code: "</>",
+  calculator: "\uD83E\uDDEE",
+  pickaxe: "\u26CF",
+  network: "\uD83C\uDF10",
+  gauge: "\u2699",
+  zap: "\u26A1",
+  signature: "\u270B",
+  "tree-branch": "\uD83C\uDF3F",
+  clock: "\u23F0",
 };
 
 function getGroupedTopics() {
@@ -113,13 +129,6 @@ export function Nav() {
   }, [isOpen]);
 
   const grouped = getGroupedTopics();
-  const categoryOrder: TopicCategory[] = [
-    "fundamentals",
-    "keys",
-    "transactions",
-    "network",
-    "advanced",
-  ];
 
   return (
     <>
@@ -249,16 +258,43 @@ export function Nav() {
 
             {/* Category-grouped links */}
             <div className="mx-auto w-full max-w-2xl flex-1 px-6 py-8">
-              {categoryOrder
+              {CATEGORY_ORDER
                 .filter((cat) => grouped.has(cat))
                 .map((cat) => (
                   <section key={cat} className="mb-8" data-overlay-item>
                     <h3 className="mb-3 font-display text-xs font-semibold uppercase tracking-widest text-text-muted">
-                      {CATEGORY_LABELS[cat]}
+                      {CATEGORY_LABELS[cat]?.title ?? cat}
                     </h3>
                     <div className="flex flex-col gap-1">
                       {grouped.get(cat)!.map((topic) => {
+                        const isAvailable = topic.available === true;
                         const isActive = pathname === `/${topic.slug}`;
+
+                        if (!isAvailable) {
+                          return (
+                            <div
+                              key={topic.slug}
+                              data-overlay-item
+                              className="flex items-center gap-4 rounded-lg border-l-2 border-transparent px-4 py-3 opacity-40"
+                            >
+                              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-bg-card text-lg">
+                                {ICON_EMOJI[topic.icon] ?? "\u25CF"}
+                              </span>
+                              <div className="min-w-0 flex-1">
+                                <div className="font-body text-sm font-semibold text-text-muted">
+                                  {topic.title}
+                                </div>
+                                <div className="truncate font-body text-xs text-text-muted">
+                                  {topic.description}
+                                </div>
+                              </div>
+                              <span className="shrink-0 rounded-full border border-border-subtle px-2 py-0.5 text-[10px] font-medium text-text-muted">
+                                Bald
+                              </span>
+                            </div>
+                          );
+                        }
+
                         return (
                           <Link
                             key={topic.slug}
@@ -273,7 +309,7 @@ export function Nav() {
                             )}
                           >
                             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-bg-card text-lg group-hover:bg-bg-card-hover">
-                              {ICON_EMOJI[topic.icon] ?? "●"}
+                              {ICON_EMOJI[topic.icon] ?? "\u25CF"}
                             </span>
                             <div className="min-w-0">
                               <div
