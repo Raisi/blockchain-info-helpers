@@ -1,6 +1,7 @@
 # dependencies
 /node_modules
 /generated_artifacts
+/.claude
 /.pnp
 .pnp.*
 .yarn/*
