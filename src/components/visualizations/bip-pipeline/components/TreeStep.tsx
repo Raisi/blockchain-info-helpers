@@ -108,7 +108,7 @@ export default function TreeStep({
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
-      if (tooltip) setMousePos({ x: e.clientX + 14, y: e.clientY + 10 });
+      if (tooltip) setMousePos({ x: e.clientX, y: e.clientY });
     },
     [tooltip]
   );
@@ -116,7 +116,7 @@ export default function TreeStep({
   const handleNodeHover = useCallback(
     (data: TooltipData | null, e?: React.MouseEvent) => {
       if (data && e) {
-        setMousePos({ x: e.clientX + 14, y: e.clientY + 10 });
+        setMousePos({ x: e.clientX, y: e.clientY });
       }
       setTooltip(data);
     },

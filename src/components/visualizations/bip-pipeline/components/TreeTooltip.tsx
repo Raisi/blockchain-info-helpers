@@ -1,5 +1,7 @@
 "use client";
 
+import { createPortal } from "react-dom";
+
 export interface TooltipData {
   title: string;
   color: string;
@@ -14,12 +16,12 @@ interface TreeTooltipProps {
 export default function TreeTooltip({ data, position }: TreeTooltipProps) {
   if (!data) return null;
 
-  return (
+  return createPortal(
     <div
       className="pointer-events-none fixed z-50 max-w-xs rounded-lg border bg-bg-primary/95 px-3 py-2.5 shadow-lg backdrop-blur-sm"
       style={{
         left: Math.min(position.x + 14, window.innerWidth - 320),
-        top: Math.min(position.y + 10, window.innerHeight - 200),
+        top: Math.min(position.y + 14, window.innerHeight - 200),
         borderColor: data.color,
       }}
     >
@@ -39,6 +41,7 @@ export default function TreeTooltip({ data, position }: TreeTooltipProps) {
           </span>
         </div>
       ))}
-    </div>
+    </div>,
+    document.body
   );
 }

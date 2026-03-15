@@ -128,13 +128,14 @@ export default function TreeSvgCanvas({
         title: `🌱 Kind-Seed ${i} (BIP85 Index ${i})`,
         color: CHILD_COLORS[i],
         rows: [
-          { label: "BIP85 Pfad", val: `m/83696968'/39'/0'/12'/${i}'` },
-          { label: "Entropy (128b)", val: entH ? `${entH.slice(0, 24)}···` : "—" },
-          { label: "Mnemonic", val: child?.childMnemonic ? child.childMnemonic.slice(0, 4).join(" ") + "…" : "—" },
-          { label: "Seed (512b)", val: seedH ? `${seedH.slice(0, 24)}···` : "—" },
+          { label: "Ableitungspfad", val: `m/83696968'/39'/0'/12'/${i}' — 83696968=BIP85, 39=BIP39, 0=BTC, 12=Wörter` },
+          { label: "Anwendungstyp", val: "BIP39 Mnemonic (12 Wörter)" },
+          { label: "Entropy (128 Bit)", val: entH ? `${entH.slice(0, 24)}···` : "—" },
+          { label: "Mnemonic", val: child?.childMnemonic ? child.childMnemonic.slice(0, 4).join(" ") + " …" : "—" },
+          { label: "Seed (512 Bit)", val: seedH ? `${seedH.slice(0, 24)}···` : "—" },
           { label: "Child Master", val: child?.childMaster ? `${toHex(child.childMaster.priv).slice(0, 24)}···` : "—" },
           { label: "BIP44 Final", val: finalH ? `${finalH.slice(0, 24)}···` : "—" },
-          { label: "Isolation", val: "Kein Rückschluss auf Master möglich" },
+          { label: "Sicherheit", val: "Einweg-Ableitung: Kind → Master unmöglich. Kinder untereinander unabhängig." },
         ],
       },
       e
@@ -296,7 +297,46 @@ export default function TreeSvgCanvas({
                   const strokeCol = isExt ? CHILD_COLORS[i] : "#444468";
                   const lineOpacity = isExt ? 0.6 : 0.25;
                   return (
-                    <g key={li}>
+                    <g
+                      key={li}
+                      style={{ cursor: "pointer" }}
+                      onMouseEnter={(e) => {
+                        onHighlight(i);
+                        if (isExt) {
+                          onNodeHover(
+                            {
+                              title: `📬 ext/0 — Externe Empfangsadresse (Index ${i})`,
+                              color: CHILD_COLORS[i],
+                              rows: [
+                                { label: "BIP44 Pfad", val: `m/44'/0'/0'/0/0` },
+                                { label: "Rolle", val: "Erste externe Empfangsadresse (change=0, index=0)" },
+                                { label: "Final Key", val: leafHex ? `${leafHex.slice(0, 24)}···` : "—" },
+                                { label: "Verwendung", val: "Finaler Spending-Key für eingehende Transaktionen" },
+                              ],
+                            },
+                            e
+                          );
+                        } else {
+                          onNodeHover(
+                            {
+                              title: `🔄 int/0 — Change-Adresse (Index ${i})`,
+                              color: "#555580",
+                              rows: [
+                                { label: "BIP44 Pfad", val: `m/44'/0'/0'/1/0` },
+                                { label: "Rolle", val: "Erste interne Change-Adresse (change=1, index=0)" },
+                                { label: "Status", val: "Symbolisch — wird in dieser Visualisierung nicht berechnet" },
+                                { label: "Zweck", val: "Empfängt Wechselgeld aus eigenen Transaktionen" },
+                              ],
+                            },
+                            e
+                          );
+                        }
+                      }}
+                      onMouseLeave={() => {
+                        onHighlight(null);
+                        onNodeHover(null);
+                      }}
+                    >
                       <line
                         x1={cx2} y1={CHILD_Y + 32} x2={lx} y2={BIP44_Y - 18}
                         stroke={strokeCol} strokeWidth="1.2" strokeDasharray="4 3" opacity={lineOpacity}
@@ -406,6 +446,8 @@ export default function TreeSvgCanvas({
                     { label: "Operation", val: 'HMAC-SHA512("bip-entropy-from-k")' },
                     { label: "Input", val: "Child Private Key (IL) aus BIP32 Ableitung" },
                     { label: "Output", val: "64 Bytes → erste N Bytes als Kind-Entropie" },
+                    { label: "Warum HMAC", val: "Wandelt Private Key in frische, unabhängige Entropie um" },
+                    { label: "Schlüssel", val: '"bip-entropy-from-k" — fester String, garantiert Determinismus' },
                     { label: "Eigenschaft", val: "Deterministische Einwegfunktion — kein Rückschluss" },
                   ],
                 },
@@ -441,8 +483,10 @@ export default function TreeSvgCanvas({
                   rows: [
                     { label: "Seed (512 Bit)", val: seedHex ? `${seedHex.slice(0, 32)}···` : "—" },
                     { label: "Master PrivKey", val: masterHex ? `${masterHex.slice(0, 32)}···` : "—" },
-                    { label: "Erzeugt durch", val: "PBKDF2-HMAC-SHA512 aus Mnemonic" },
-                    { label: "Eigenschaft", val: "Alle Kind-Wallets deterministisch ableitbar" },
+                    { label: "Länge", val: "512 Bit (64 Bytes)" },
+                    { label: "Erzeugt durch", val: "PBKDF2-HMAC-SHA512 aus Mnemonic (2048 Runden)" },
+                    { label: "Eigenschaft", val: "Ein Bit Änderung → alle Kinder komplett anders (Lawineneffekt)" },
+                    { label: "Ableitungen", val: "Alle Kind-Wallets deterministisch ableitbar" },
                   ],
                 },
                 e
