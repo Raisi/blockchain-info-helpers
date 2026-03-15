@@ -128,15 +128,15 @@ export default function TreeStep({
       <ExplainBox
         icon="🕸️"
         title="Der Ableitungsbaum — Überblick"
-        text="Diese Visualisierung zeigt wie Master Seed, BIP85-Transformation und mehrere Kind-Seeds zusammenhängen — und warum der Weg nur in eine Richtung geht. Scrolle nach unten für die vollständige Child-Seed-Pipeline mit echten Daten."
+        text="Diese Visualisierung zeigt wie Master Seed, BIP85-Transformation und mehrere Child Seeds zusammenhängen — und warum der Weg nur in eine Richtung geht. Scrolle nach unten für die vollständige Child Seed Pipeline mit echten Daten."
         color="#38bdf8"
         steps={[
           "<strong>Master Seed (oben):</strong> Alles beginnt hier. Aus einem einzigen Master Key werden alle anderen Schlüssel deterministisch abgeleitet.",
           '<strong>HMAC-SHA512 Transformation (Mitte):</strong> Das ist der BIP85-Kern. Der Master-abgeleitete Private Key wird durch HMAC-SHA512 gejagt — Output: 64 Bytes neue Entropie.',
-          "<strong>⛔ Einweg-Barriere:</strong> Die rote Linie zeigt die kryptografische Einwegfunktion. Kind-Seeds kennen können → Master <em>nie</em> rekonstruierbar.",
-          "<strong>Kind-Seeds (unten, farbig):</strong> Vier unabhängige Kind-Seeds aus BIP85 Index 0–3. Jeder lebt in seiner eigenen Isolation-Zone. Hover über einen Knoten für Details.",
+          "<strong>⛔ Einweg-Barriere:</strong> Die rote Linie zeigt die kryptografische Einwegfunktion. Child Seeds kennen → Master <em>nie</em> rekonstruierbar.",
+          "<strong>Child Seeds (unten, farbig):</strong> Vier unabhängige Child Seeds aus BIP85 Index 0–3. Jeder lebt in seiner eigenen Isolation-Zone. Hover über einen Knoten für Details.",
           "<strong>BIP44 Leaf-Keys:</strong> ext/0 = externe Adresse (change=0, index=0), berechnet. int/0 = interne Adresse (change=1) — symbolisch, nicht berechnet.",
-          "<strong>⬇️ Child-Seed Pipeline (unten):</strong> Scrolle nach unten um die vollständige 5-Schritt-Pipeline pro Kind-Seed zu sehen.",
+          "<strong>⬇️ Child Seed Pipeline (unten):</strong> Scrolle nach unten um die vollständige 5-Schritt-Pipeline pro Child Seed zu sehen.",
         ]}
       />
 
@@ -166,11 +166,11 @@ export default function TreeStep({
       <TreeLegend />
 
       <InfoCard>
-        <strong>💡 Interaktion:</strong> Hover über einen Kind-Seed-Knoten um
+        <strong>💡 Interaktion:</strong> Hover über einen Child Seed Knoten um
         Details anzuzeigen und die zugehörige Ableitungslinie hervorzuheben. Die{" "}
         <span className="text-[#f472b6]">Einweg-Barriere</span> zeigt: Kenntnis
-        eines Kind-Seeds erlaubt <strong>keinerlei Rückschluss</strong> auf den
-        Master-Seed oder andere Kinder.
+        eines Child Seeds erlaubt <strong>keinerlei Rückschluss</strong> auf den
+        Master Seed oder andere Children.
       </InfoCard>
 
       <ChildPipeline treeData={treeData} />

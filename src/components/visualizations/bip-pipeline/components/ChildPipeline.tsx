@@ -49,7 +49,7 @@ function buildStages(child: TreeChild, i: number): PipeStage[] {
       desc: "SHA256-Checksum + Wordlist → 12 Wörter",
       data: child.childMnemonic ? child.childMnemonic.join(" ") : null,
       dataColor: col,
-      dataLabel: "Kind-Mnemonic",
+      dataLabel: "Child Mnemonic",
     },
     {
       num: "④",
@@ -105,7 +105,7 @@ function ChildCard({ child, index }: { child: TreeChild; index: number }) {
         </div>
         <div className="flex-1">
           <div className="font-body text-sm font-extrabold" style={{ color: col }}>
-            Kind-Seed Index {index}
+            Child Seed Index {index}
           </div>
           <div className="text-[10px] text-text-secondary">
             m/83696968&apos;/39&apos;/0&apos;/12&apos;/{index}&apos; → BIP44 m/44&apos;/0&apos;/0&apos;/0/0
@@ -169,13 +169,13 @@ export default function ChildPipeline({ treeData }: ChildPipelineProps) {
   return (
     <div className="mt-7">
       <div className="mb-1 font-code text-[10px] tracking-widest text-text-muted">
-        CHILD SEED ERSTELLUNGSPROZESS — 5 SCHRITTE PRO KIND
+        CHILD SEED PIPELINE — 5 SCHRITTE PRO CHILD SEED
       </div>
       <div className="mb-4 font-body text-xs leading-relaxed text-text-secondary">
-        Jeder Kind-Seed durchläuft eine{" "}
+        Jeder Child Seed durchläuft eine{" "}
         <strong className="text-[#fb7185]">vollständige Pipeline</strong> — von
         der BIP32-Ableitung bis zum fertigen BIP44-Schlüssel. Klicke auf ein
-        Kind um die echten, berechneten Daten zu sehen.
+        Child Seed um die echten, berechneten Daten zu sehen.
       </div>
 
       <div className="flex flex-col gap-3.5">
@@ -191,7 +191,7 @@ export default function ChildPipeline({ treeData }: ChildPipelineProps) {
         Seed verwendet — ohne PBKDF2. Das ist{" "}
         <strong className="text-[#fb7185]">kryptografisch falsch</strong>. Der
         korrekte Weg ist: Entropy → Mnemonic-Wörter → PBKDF2 (2048 Runden) →
-        512-Bit Seed. Erst dadurch sind die Kind-Seeds mit echten
+        512-Bit Seed. Erst dadurch sind die Child Seeds mit echten
         Hardware-Wallets kompatibel.
       </div>
     </div>

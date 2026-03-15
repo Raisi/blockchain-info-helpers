@@ -125,7 +125,7 @@ export default function TreeSvgCanvas({
     const finalH = child?.finalKey ? toHex(child.finalKey.priv) : null;
     onNodeHover(
       {
-        title: `🌱 Kind-Seed ${i} (BIP85 Index ${i})`,
+        title: `🌱 Child Seed ${i} (BIP85 Index ${i})`,
         color: CHILD_COLORS[i],
         rows: [
           { label: "Ableitungspfad", val: `m/83696968'/39'/0'/12'/${i}' — 83696968=BIP85, 39=BIP39, 0=BTC, 12=Wörter` },
@@ -135,7 +135,7 @@ export default function TreeSvgCanvas({
           { label: "Seed (512 Bit)", val: seedH ? `${seedH.slice(0, 24)}···` : "—" },
           { label: "Child Master", val: child?.childMaster ? `${toHex(child.childMaster.priv).slice(0, 24)}···` : "—" },
           { label: "BIP44 Final", val: finalH ? `${finalH.slice(0, 24)}···` : "—" },
-          { label: "Sicherheit", val: "Einweg-Ableitung: Kind → Master unmöglich. Kinder untereinander unabhängig." },
+          { label: "Sicherheit", val: "Einweg-Ableitung: Child → Master unmöglich. Children untereinander unabhängig." },
         ],
       },
       e
@@ -385,9 +385,9 @@ export default function TreeSvgCanvas({
                   onHighlight(null);
                   onNodeHover(null);
                 }}
-                aria-label={`Kind-Seed ${i}`}
+                aria-label={`Child Seed ${i}`}
               >
-                <title>Kind-Seed {i} — BIP85 Index {i}</title>
+                <title>Child Seed {i} — BIP85 Index {i}</title>
                 <RoundRect x={cx2} y={CHILD_Y} w={140} h={60} fill="var(--bg-primary)" stroke={CHILD_COLORS[i]} rx={10} />
                 {/* Colored top bar */}
                 <rect x={cx2 - 70} y={CHILD_Y - 30} width={140} height={16} rx="5" fill={CHILD_COLORS[i]} opacity="0.15" />
@@ -445,7 +445,7 @@ export default function TreeSvgCanvas({
                   rows: [
                     { label: "Operation", val: 'HMAC-SHA512("bip-entropy-from-k")' },
                     { label: "Input", val: "Child Private Key (IL) aus BIP32 Ableitung" },
-                    { label: "Output", val: "64 Bytes → erste N Bytes als Kind-Entropie" },
+                    { label: "Output", val: "64 Bytes → erste N Bytes als Child Entropy" },
                     { label: "Warum HMAC", val: "Wandelt Private Key in frische, unabhängige Entropie um" },
                     { label: "Schlüssel", val: '"bip-entropy-from-k" — fester String, garantiert Determinismus' },
                     { label: "Eigenschaft", val: "Deterministische Einwegfunktion — kein Rückschluss" },

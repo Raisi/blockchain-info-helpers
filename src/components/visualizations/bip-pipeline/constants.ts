@@ -43,7 +43,7 @@ export const FLOW_NODES: FlowNodeDef[] = [
   { icon: "📍", label: "BIP44", color: "var(--accent-danger)" },
   { icon: "💎", label: "Key", color: "var(--accent-success)" },
   { icon: "🔮", label: "BIP85", color: "#fb7185" },
-  { icon: "🌱", label: "Kind-Seed", color: "#fb7185" },
+  { icon: "🌱", label: "Child Seed", color: "#fb7185" },
 ];
 
 export const STEP_TO_FLOW: Record<number, number> = {
@@ -64,7 +64,7 @@ export const BIP85_APPS: Record<
   bip39: {
     label: "BIP39 Mnemonic",
     icon: "🎲",
-    desc: "Kindmnemonic aus Entropie",
+    desc: "Child Mnemonic aus Entropy",
     purpose: 39,
   },
   wif: {

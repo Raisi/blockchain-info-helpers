@@ -296,7 +296,7 @@ function OverviewStep({ onGo }: { onGo: (step: number) => void }) {
     {
       icon: "🌳",
       name: "Child Key Derivation",
-      sub: "Hierarchische Kind-Schlüssel Ableitung (BIP32)",
+      sub: "Hierarchische Child Key Derivation (BIP32)",
       algo: "HMAC-SHA512 + EC-Addition",
       step: 4,
       color: "var(--accent-secondary)",
@@ -311,8 +311,8 @@ function OverviewStep({ onGo }: { onGo: (step: number) => void }) {
     },
     {
       icon: "🔮",
-      name: "BIP85 Kind-Entropie",
-      sub: "Unabhängige Kind-Seeds aus Master — vollständig rekursiv!",
+      name: "BIP85 Child Entropy",
+      sub: "Unabhängige Child Seeds aus Master — vollständig rekursiv!",
       algo: "BIP32 + HMAC-SHA512('bip-entropy-from-k')",
       step: 6,
       color: "#fb7185",
@@ -370,8 +370,8 @@ function OverviewStep({ onGo }: { onGo: (step: number) => void }) {
       </div>
       <InfoCard>
         <strong>Neu — BIP85 + Rekursion:</strong> Aus einem einzigen Master-Seed
-        lassen sich beliebig viele vollständig unabhängige Kind-Seeds ableiten.
-        Ein kompromittiertes Kind enthüllt <strong>nichts</strong> über den
+        lassen sich beliebig viele vollständig unabhängige Child Seeds ableiten.
+        Ein kompromittierter Child Seed enthüllt <strong>nichts</strong> über den
         Master.
       </InfoCard>
     </div>
@@ -668,7 +668,7 @@ function ChildKeyStep({
       <ExplainBox
         icon="🌳"
         title="Was sind Child Keys?"
-        text="BIP32 erlaubt es, aus einem Master Key beliebig viele Kind-Schlüssel abzuleiten — in einer Baumstruktur."
+        text="BIP32 erlaubt es, aus einem Master Key beliebig viele Child Keys abzuleiten — in einer Baumstruktur."
         color="var(--accent-secondary)"
         steps={[
           "<strong>Hardened Ableitung ('):</strong> Input ist der private Key + Chain Code + Index.",
@@ -894,7 +894,7 @@ function Bip85Step({
       <ExplainBox
         icon="🔮"
         title="Was ist BIP85?"
-        text="Aus einem einzigen Master Seed lassen sich beliebig viele unabhängige Kind-Seeds ableiten. Jeder Kind-Seed ist eine eigenständige Wallet."
+        text="Aus einem einzigen Master Seed lassen sich beliebig viele unabhängige Child Seeds ableiten. Jeder Child Seed ist eine eigenständige Wallet."
         color="#fb7185"
         steps={[
           "<strong>Warum BIP85?</strong> Ein sicher aufbewahrter Master-Seed für Dutzende Wallets.",
@@ -988,7 +988,7 @@ function Bip85Step({
           </div>
         )}
         <div>
-          <div className="mb-1 text-[9px] text-text-muted">KIND-INDEX</div>
+          <div className="mb-1 text-[9px] text-text-muted">CHILD INDEX</div>
           <input
             type="number"
             min={0}
@@ -1010,7 +1010,7 @@ function Bip85Step({
       {bip85Loading ? (
         <div className="mt-4 flex items-center gap-2 text-xs text-text-secondary">
           <Spinner />
-          BIP85 Derivation läuft...
+          BIP85 Ableitung läuft...
         </div>
       ) : bip85Result ? (
         <>
@@ -1037,7 +1037,7 @@ function Bip85Step({
           {app === "bip39" && bip85Result.childMnemonic && (
             <div className="relative mt-4 overflow-hidden rounded-xl border-2 border-[#fb7185]/30 bg-[#fb7185]/[0.04] p-4">
               <div className="mb-1 flex items-center gap-2 font-body text-[13px] font-extrabold text-[#fb7185]">
-                🔮 Abgeleitetes Kind-Mnemonic
+                🔮 Abgeleitetes Child Mnemonic
                 <span className="rounded-[10px] border border-[#fb7185]/30 bg-[#fb7185]/15 px-2 py-0.5 font-code text-[9px]">
                   {wordCount} WÖRTER · INDEX {index}
                 </span>
@@ -1198,7 +1198,7 @@ function Sidebar({
               <>
                 <div className="my-2 h-px bg-border-subtle" />
                 <div className="mb-1.5 font-code text-[11px] tracking-wider text-text-muted">
-                  KIND-MNEMONIC ({bip85Result.childMnemonic.length} WÖRTER)
+                  CHILD MNEMONIC ({bip85Result.childMnemonic.length} WÖRTER)
                 </div>
                 <div className="rounded-lg border border-[#fb7185]/20 bg-bg-primary p-2.5 font-code text-xs leading-8 text-[#fb7185]">
                   {bip85Result.childMnemonic.join(" ")}
@@ -1220,7 +1220,7 @@ function Sidebar({
             { bip: "BIP39", col: "var(--accent-warning)", desc: "Mnemonic · 2048 Wörter" },
             { bip: "BIP32", col: "var(--accent-success)", desc: "HD Wallets · Schlüsselbäume" },
             { bip: "BIP44", col: "var(--accent-secondary)", desc: "m/44'/coin'/acct'/change/idx" },
-            { bip: "BIP85", col: "#fb7185", desc: "Deterministische Kind-Entropie" },
+            { bip: "BIP85", col: "#fb7185", desc: "Deterministische Child Entropy" },
           ].map((r, i) => (
             <div
               key={i}

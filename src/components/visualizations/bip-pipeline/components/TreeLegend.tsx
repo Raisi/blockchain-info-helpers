@@ -3,10 +3,10 @@
 const LEGEND_ITEMS = [
   { color: "#a78bfa", label: "Master Seed (Root)" },
   { color: "#f472b6", label: "BIP85 HMAC Transformation" },
-  { color: "#f472b6", label: "Kind-Seed 0" },
-  { color: "#34d399", label: "Kind-Seed 1" },
-  { color: "#60a5fa", label: "Kind-Seed 2" },
-  { color: "#fbbf24", label: "Kind-Seed 3" },
+  { color: "#f472b6", label: "Child Seed 0" },
+  { color: "#34d399", label: "Child Seed 1" },
+  { color: "#60a5fa", label: "Child Seed 2" },
+  { color: "#fbbf24", label: "Child Seed 3" },
   { color: "#ff3366", label: "Einweg-Sperre (kein Rückschluss)" },
 ];
 
