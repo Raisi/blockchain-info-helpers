@@ -10,6 +10,7 @@ const OPERATION_LABELS: Record<ECTab, string> = {
   addition: "P + Q = R",
   scalar: "n × G",
   keygen: "k → K",
+  quantum: "K → k ?",
 };
 
 interface PipelineBarProps {

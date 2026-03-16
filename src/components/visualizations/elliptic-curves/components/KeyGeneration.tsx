@@ -19,6 +19,7 @@ interface KeyGenerationProps {
   scalar: number;
   showWorldSwitch: boolean;
   onWorldSwitchComplete: () => void;
+  onKeyGenerated?: () => void;
   footer?: React.ReactNode;
 }
 
@@ -26,6 +27,7 @@ export default function KeyGeneration({
   scalar,
   showWorldSwitch,
   onWorldSwitchComplete,
+  onKeyGenerated,
   footer,
 }: KeyGenerationProps) {
   const [privateKeyHex, setPrivateKeyHex] = useState("");
@@ -312,6 +314,7 @@ export default function KeyGeneration({
       setPublicKeyX(pubKey.x);
       setPublicKeyY(pubKey.y);
       setIsGenerating(false);
+      onKeyGenerated?.();
 
       // Pick a random curve point as visual representative for the public key
       const curveData = getCurvePoints(CURVE_X_RANGE[0], CURVE_X_RANGE[1], 200);
@@ -350,7 +353,7 @@ export default function KeyGeneration({
 
       return () => ctx.revert();
     }, 100);
-  }, []);
+  }, [onKeyGenerated]);
 
   // Redraw canvas with highlight when pubKeyPoint changes
   useEffect(() => {
@@ -608,15 +611,19 @@ export default function KeyGeneration({
 
       {/* RIGHT: Sidebar */}
       <div className="space-y-4">
-        {/* Explanation text — visible during animation */}
+        {/* Discrete-points explanation — persists after animation */}
+        {(phase === "animating" || phase === "done") && (
+          <div className="rounded-lg border border-accent-primary/20 bg-accent-primary/5 p-4">
+            <p className="text-sm text-text-primary">
+              Die glatte Kurve wird zu diskreten Punkten &mdash;
+              genau so arbeitet Bitcoin &uuml;ber einem endlichen K&ouml;rper.
+            </p>
+          </div>
+        )}
+
+        {/* Animation-phase sidebar (fades out via GSAP at t=3.2) */}
         {phase === "animating" && (
           <div ref={sidebarExplainRef} className="space-y-3">
-            <div className="rounded-lg border border-accent-primary/20 bg-accent-primary/5 p-4">
-              <p className="text-sm text-text-primary">
-                Die glatte Kurve wird zu diskreten Punkten &mdash;
-                genau so arbeitet Bitcoin &uuml;ber einem endlichen K&ouml;rper.
-              </p>
-            </div>
             <div className="rounded-lg border border-accent-secondary/20 bg-accent-secondary/5 p-4">
               <p className="font-mono text-sm text-accent-secondary">
                 n = {scalar} &times; G

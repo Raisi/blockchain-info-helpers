@@ -25,6 +25,12 @@ export const EC_TABS: TabConfig[] = [
     description:
       "Private Key (zufällige 256-Bit-Zahl) × Generator G = Public Key. Reale Berechnung mit der secp256k1-Kurve.",
   },
+  {
+    id: "quantum",
+    label: "Quanten-Bedrohung",
+    description:
+      "Quantencomputer könnten mit Shors Algorithmus den Private Key aus dem Public Key berechnen — das ECDLP lösen. Wie real ist die Bedrohung?",
+  },
 ];
 
 export const CURVE_X_RANGE: [number, number] = [-4, 6];
@@ -53,6 +59,7 @@ export const INITIAL_COMPLETION: CompletionState = {
   tab1: { pointsPlaced: 0 },
   tab2: { constructionCompleted: false },
   tab3: { sliderMoved: false },
+  tab4: { keyGenerated: false },
 };
 
 export const COMPLETION_CHECKS: Record<
@@ -62,7 +69,8 @@ export const COMPLETION_CHECKS: Record<
   curve: (s) => s.tab1.pointsPlaced >= 2,
   addition: (s) => s.tab2.constructionCompleted,
   scalar: (s) => s.tab3.sliderMoved,
-  keygen: null,
+  keygen: (s) => s.tab4.keyGenerated,
+  quantum: null,
 };
 
-export const TAB_ORDER: ECTab[] = ["curve", "addition", "scalar", "keygen"];
+export const TAB_ORDER: ECTab[] = ["curve", "addition", "scalar", "keygen", "quantum"];

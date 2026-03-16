@@ -1,4 +1,4 @@
-export type ECTab = "curve" | "addition" | "scalar" | "keygen";
+export type ECTab = "curve" | "addition" | "scalar" | "keygen" | "quantum";
 
 export interface TabConfig {
   id: ECTab;
@@ -46,4 +46,5 @@ export interface CompletionState {
   tab1: { pointsPlaced: number };
   tab2: { constructionCompleted: boolean };
   tab3: { sliderMoved: boolean };
+  tab4: { keyGenerated: boolean };
 }

@@ -15,6 +15,7 @@ import TheCurve from "./components/TheCurve";
 import PointAddition from "./components/PointAddition";
 import ScalarMultiplication from "./components/ScalarMultiplication";
 import KeyGeneration from "./components/KeyGeneration";
+import QuantumThreat from "./components/QuantumThreat";
 
 export default function EllipticCurvesVisualizer() {
   const [activeTab, setActiveTab] = useState<ECTab>("curve");
@@ -39,10 +40,12 @@ export default function EllipticCurvesVisualizer() {
     addition: CurvePoint2D[] | null;
     scalar: CurvePoint2D | null;
     keygen: number | null;
+    quantum: number | null;
   }>({
     addition: null,
     scalar: null,
     keygen: null,
+    quantum: null,
   });
 
   // Completion effect: unlock next tab when criteria met
@@ -83,6 +86,8 @@ export default function EllipticCurvesVisualizer() {
       }));
     } else if (activeTab === "keygen") {
       setLastSeenUpstream((prev) => ({ ...prev, keygen: scalar }));
+    } else if (activeTab === "quantum") {
+      setLastSeenUpstream((prev) => ({ ...prev, quantum: scalar }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
@@ -108,6 +113,9 @@ export default function EllipticCurvesVisualizer() {
     if (activeTab === "keygen" && lastSeenUpstream.keygen !== null) {
       return lastSeenUpstream.keygen !== scalar;
     }
+    if (activeTab === "quantum" && lastSeenUpstream.quantum !== null) {
+      return lastSeenUpstream.quantum !== scalar;
+    }
     return false;
   }, [activeTab, lastSeenUpstream, placedPoints, additionResultPoint, scalar]);
 
@@ -123,6 +131,8 @@ export default function EllipticCurvesVisualizer() {
       }));
     } else if (activeTab === "keygen") {
       setLastSeenUpstream((prev) => ({ ...prev, keygen: scalar }));
+    } else if (activeTab === "quantum") {
+      setLastSeenUpstream((prev) => ({ ...prev, quantum: scalar }));
     }
   }, [activeTab, placedPoints, additionResultPoint, scalar]);
 
@@ -218,9 +228,17 @@ export default function EllipticCurvesVisualizer() {
             scalar={scalar}
             showWorldSwitch={!hasSeenWorldSwitch}
             onWorldSwitchComplete={() => setHasSeenWorldSwitch(true)}
+            onKeyGenerated={() =>
+              setCompletion((prev) => ({
+                ...prev,
+                tab4: { keyGenerated: true },
+              }))
+            }
             footer={nextButton}
           />
         );
+      case "quantum":
+        return <QuantumThreat scalar={scalar} footer={nextButton} />;
     }
   };
 
