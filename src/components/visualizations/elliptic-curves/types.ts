@@ -41,3 +41,9 @@ export interface CanvasPoint {
   radius?: number;
   pulse?: boolean;
 }
+
+export interface CompletionState {
+  tab1: { pointsPlaced: number };
+  tab2: { constructionCompleted: boolean };
+  tab3: { sliderMoved: boolean };
+}

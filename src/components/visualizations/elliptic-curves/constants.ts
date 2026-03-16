@@ -1,4 +1,4 @@
-import type { TabConfig } from "./types";
+import type { TabConfig, ECTab, CompletionState } from "./types";
 
 export const EC_TABS: TabConfig[] = [
   {
@@ -48,3 +48,21 @@ export const DEFAULT_Q = { x: 1, y: 2.828 };
 export const SCALAR_MIN = 2;
 export const SCALAR_MAX = 20;
 export const SCALAR_DEFAULT = 5;
+
+export const INITIAL_COMPLETION: CompletionState = {
+  tab1: { pointsPlaced: 0 },
+  tab2: { constructionCompleted: false },
+  tab3: { sliderMoved: false },
+};
+
+export const COMPLETION_CHECKS: Record<
+  ECTab,
+  ((s: CompletionState) => boolean) | null
+> = {
+  curve: (s) => s.tab1.pointsPlaced >= 2,
+  addition: (s) => s.tab2.constructionCompleted,
+  scalar: (s) => s.tab3.sliderMoved,
+  keygen: null,
+};
+
+export const TAB_ORDER: ECTab[] = ["curve", "addition", "scalar", "keygen"];

@@ -7,22 +7,43 @@ import { addPoints, snapToCurve, lineExtendedPoints } from "../curve-math";
 import { DEFAULT_P, DEFAULT_Q, CURVE_X_RANGE, CURVE_X_MIN_REAL } from "../constants";
 import type { CurvePoint2D, CanvasPoint, CanvasLine, AnimStep } from "../types";
 
-export default function PointAddition() {
+interface PointAdditionProps {
+  initialPoints?: CurvePoint2D[];
+  onResultChange: (point: CurvePoint2D | null) => void;
+  onConstructionComplete: () => void;
+  footer?: React.ReactNode;
+}
+
+export default function PointAddition({
+  initialPoints,
+  onResultChange,
+  onConstructionComplete,
+  footer,
+}: PointAdditionProps) {
   const [P, setP] = useState<CurvePoint2D>(DEFAULT_P);
   const [Q, setQ] = useState<CurvePoint2D>(DEFAULT_Q);
   const [animStep, setAnimStep] = useState<AnimStep>("idle");
   const [dragging, setDragging] = useState<"P" | "Q" | null>(null);
   const animRef = useRef<gsap.core.Timeline | null>(null);
 
-  // Snap initial points
+  // Snap initial points (use initialPoints from upstream if available)
   useEffect(() => {
-    const sp = snapToCurve(DEFAULT_P.x, DEFAULT_P.y >= 0);
-    const sq = snapToCurve(DEFAULT_Q.x, DEFAULT_Q.y >= 0);
+    const pDefault = initialPoints?.[0] ?? DEFAULT_P;
+    const qDefault = initialPoints?.[1] ?? DEFAULT_Q;
+    const sp = snapToCurve(pDefault.x, pDefault.y >= 0);
+    const sq = snapToCurve(qDefault.x, qDefault.y >= 0);
     if (sp) setP(sp);
     if (sq) setQ(sq);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const result = addPoints(P, Q);
+
+  // Report result changes upstream
+  useEffect(() => {
+    const res = addPoints(P, Q);
+    onResultChange(res?.result ?? null);
+  }, [P, Q, onResultChange]);
 
   const handlePointerDown = useCallback(
     (mathPoint: CurvePoint2D) => {
@@ -73,10 +94,13 @@ export default function PointAddition() {
     animRef.current = tl;
 
     tl.call(() => setAnimStep("line"), [], 0);
-    tl.call(() => setAnimStep("intersect"), [], 0.8);
-    tl.call(() => setAnimStep("reflect"), [], 1.6);
-    tl.call(() => setAnimStep("done"), [], 2.4);
-  }, [result]);
+    tl.call(() => setAnimStep("intersect"), [], 1.5);
+    tl.call(() => setAnimStep("reflect"), [], 3.0);
+    tl.call(() => {
+      setAnimStep("done");
+      onConstructionComplete();
+    }, [], 4.5);
+  }, [result, onConstructionComplete]);
 
   const reset = useCallback(() => {
     setAnimStep("idle");
@@ -138,7 +162,7 @@ export default function PointAddition() {
   const isPointAtInfinity = !result;
 
   return (
-    <div className="space-y-4">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_320px]">
       <CurveCanvas
         points={canvasPoints}
         lines={canvasLines}
@@ -148,26 +172,8 @@ export default function PointAddition() {
         className={dragging ? "cursor-grabbing" : ""}
       />
 
-      {/* Controls */}
-      <div className="flex flex-wrap gap-2">
-        <button
-          onClick={runAnimation}
-          disabled={isPointAtInfinity}
-          className="rounded-lg bg-accent-primary/15 px-4 py-2 text-sm font-medium text-accent-primary transition-colors hover:bg-accent-primary/25 disabled:opacity-40"
-        >
-          Konstruktion zeigen
-        </button>
-        <button
-          onClick={reset}
-          disabled={animStep === "idle"}
-          className="rounded-lg border border-border-subtle bg-bg-card px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-card-hover hover:text-text-primary disabled:opacity-40"
-        >
-          Zurücksetzen
-        </button>
-      </div>
-
-      {/* Formulas */}
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="space-y-4 max-lg:contents">
+        {/* Points / Formulas */}
         <div className="rounded-lg border border-border-subtle bg-bg-card p-4">
           <p className="mb-2 font-display text-xs font-medium uppercase tracking-wider text-accent-primary">
             Punkte
@@ -207,6 +213,7 @@ export default function PointAddition() {
           </div>
         </div>
 
+        {/* Instructions */}
         <div className="rounded-lg border border-border-subtle bg-bg-card p-4 text-sm text-text-secondary">
           <p className="mb-2 font-display text-xs font-medium uppercase tracking-wider text-accent-primary">
             Anleitung
@@ -221,6 +228,35 @@ export default function PointAddition() {
             <li>Gleiche x, entgegengesetzte y → Punkt im Unendlichen</li>
           </ul>
         </div>
+
+        {/* Step description during animation */}
+        {animStep !== "idle" && animStep !== "done" && (
+          <div className="rounded-lg border border-accent-warning/20 bg-accent-warning/5 px-4 py-2 text-sm text-accent-warning">
+            {animStep === "line" && "Schritt 1: Gerade durch P und Q zeichnen…"}
+            {animStep === "intersect" && "Schritt 2: Dritter Schnittpunkt R' mit der Kurve…"}
+            {animStep === "reflect" && "Schritt 3: R' an der x-Achse spiegeln → P + Q"}
+          </div>
+        )}
+
+        {/* Buttons */}
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={runAnimation}
+            disabled={isPointAtInfinity}
+            className="rounded-lg bg-accent-primary/15 px-4 py-2 text-sm font-medium text-accent-primary transition-colors hover:bg-accent-primary/25 disabled:opacity-40"
+          >
+            Konstruktion zeigen
+          </button>
+          <button
+            onClick={reset}
+            disabled={animStep === "idle"}
+            className="rounded-lg border border-border-subtle bg-bg-card px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-card-hover hover:text-text-primary disabled:opacity-40"
+          >
+            Zurücksetzen
+          </button>
+        </div>
+
+        {footer}
       </div>
     </div>
   );

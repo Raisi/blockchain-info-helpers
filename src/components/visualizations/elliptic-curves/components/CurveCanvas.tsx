@@ -261,7 +261,7 @@ export default function CurveCanvas({
   return (
     <div
       ref={containerRef}
-      className={`relative aspect-[4/3] w-full overflow-hidden rounded-lg border border-border-subtle bg-bg-primary ${className}`}
+      className={`relative aspect-square w-full overflow-hidden rounded-lg border border-border-subtle bg-bg-primary ${className}`}
     >
       <canvas
         ref={canvasRef}

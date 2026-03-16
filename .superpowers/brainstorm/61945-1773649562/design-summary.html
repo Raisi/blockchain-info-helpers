@@ -1,0 +1,133 @@
+<h2>Design-Zusammenfassung: "Der Weg zum Schlüssel"</h2>
+<p class="subtitle">Alle Entscheidungen auf einen Blick — bitte prüfen und bestätigen.</p>
+
+<!-- Pipeline Bar -->
+<div class="section">
+  <h3>1. Pipeline-Bar (ersetzt aktuelle Tabs)</h3>
+  <div style="padding: 20px 16px; background: #0a0e17; border-radius: 8px; border: 1px solid #1e293b; margin-top: 8px;">
+    <div style="display: flex; align-items: stretch; gap: 2px; justify-content: center;">
+      <div style="flex: 1; max-width: 140px; padding: 10px 8px; background: rgba(34,211,238,0.1); border: 1px solid #22d3ee; border-radius: 8px 0 0 8px; text-align: center;">
+        <div style="font-size: 11px; color: #22d3ee; font-weight: 600;">✓ Die Kurve</div>
+        <div style="font-size: 9px; color: #64748b; margin-top: 2px;">y² = x³ + 7</div>
+      </div>
+      <div style="flex: 1; max-width: 140px; padding: 10px 8px; background: rgba(34,211,238,0.1); border: 1px solid #22d3ee; text-align: center;">
+        <div style="font-size: 11px; color: #22d3ee; font-weight: 600;">✓ Addition</div>
+        <div style="font-size: 9px; color: #64748b; margin-top: 2px;">P + Q = R</div>
+      </div>
+      <div style="flex: 1; max-width: 140px; padding: 10px 8px; background: rgba(139,92,246,0.15); border: 1px solid #8b5cf6; text-align: center; box-shadow: 0 0 12px rgba(139,92,246,0.2);">
+        <div style="font-size: 11px; color: #e2e8f0; font-weight: 600;">③ Skalar-Mul</div>
+        <div style="font-size: 9px; color: #94a3b8; margin-top: 2px;">n × G</div>
+      </div>
+      <div style="flex: 1; max-width: 140px; padding: 10px 8px; background: #111827; border: 1px solid #1e293b; border-radius: 0 8px 8px 0; text-align: center;">
+        <div style="font-size: 11px; color: #475569;">🔒 Schlüssel</div>
+        <div style="font-size: 9px; color: #334155; margin-top: 2px;">k → K</div>
+      </div>
+    </div>
+  </div>
+  <p style="font-size: 13px; color: #94a3b8; margin-top: 8px;">Verbundene Karten mit Mathe-Operationen. Abgeschlossene = Cyan, aktiv = Violett + Glow, gesperrt = ausgegraut mit Schloss.</p>
+</div>
+
+<!-- Linear Unlock -->
+<div class="section">
+  <h3>2. Lineares Freischalten (Vertiefte Interaktion)</h3>
+  <table style="width: 100%; font-size: 13px; border-collapse: collapse; color: #94a3b8;">
+    <tr style="border-bottom: 1px solid #1e293b;">
+      <td style="padding: 8px 0; color: #22d3ee; width: 100px;">Tab 1 → 2</td>
+      <td style="padding: 8px 0;">≥ 2 Punkte auf die Kurve setzen + Infotext scrollen</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #1e293b;">
+      <td style="padding: 8px 0; color: #22d3ee;">Tab 2 → 3</td>
+      <td style="padding: 8px 0;">Konstruktion (P+Q) abspielen + P oder Q einmal draggen</td>
+    </tr>
+    <tr>
+      <td style="padding: 8px 0; color: #22d3ee;">Tab 3 → 4</td>
+      <td style="padding: 8px 0;">Slider bewegen + Schritt-für-Schritt-Modus einmal starten</td>
+    </tr>
+  </table>
+  <p style="font-size: 13px; color: #94a3b8; margin-top: 8px;">Beim Erfüllen der Kriterien: animierter "Weiter"-Impuls in der Pipeline-Bar (nächste Karte leuchtet kurz auf).</p>
+</div>
+
+<!-- Hybrid Data Flow -->
+<div class="section">
+  <h3>3. Hybrider Datenfluss</h3>
+  <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: #111827; border-radius: 6px;">
+      <span style="color: #22d3ee; font-weight: 600; min-width: 80px; font-size: 13px;">Tab 1 → 2</span>
+      <span style="color: #334155;">│</span>
+      <span style="font-size: 13px; color: #94a3b8;">Gesetzte Punkte erscheinen als mögliche P/Q-Startpositionen in Tab 2</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: #111827; border-radius: 6px;">
+      <span style="color: #22d3ee; font-weight: 600; min-width: 80px; font-size: 13px;">Tab 2 → 3</span>
+      <span style="color: #334155;">│</span>
+      <span style="font-size: 13px; color: #94a3b8;">Ergebnis R = P+Q wird als Basispunkt G in Tab 3 voreingestellt</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.15); border-radius: 6px;">
+      <span style="color: #8b5cf6; font-weight: 600; min-width: 80px; font-size: 13px;">Tab 3 → 4</span>
+      <span style="color: #334155;">│</span>
+      <span style="font-size: 13px; color: #94a3b8;"><strong>Weltenwechsel:</strong> Skalar n wird zum Private Key, Canvas-Animation zeigt Übergang ℝ → 𝔽ₚ</span>
+    </div>
+  </div>
+</div>
+
+<!-- World Switch -->
+<div class="section">
+  <h3>4. Weltenwechsel-Animation (Tab 3 → 4)</h3>
+  <div style="padding: 16px; background: #0a0e17; border-radius: 8px; border: 1px solid #1e293b; margin-top: 8px;">
+    <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center;">
+      <div style="text-align: center;">
+        <div style="width: 80px; height: 50px; border: 1px solid #334155; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+          <svg width="60" height="30" viewBox="0 0 60 30">
+            <path d="M5,25 Q15,5 30,15 T55,5" stroke="#22d3ee" fill="none" stroke-width="2"/>
+          </svg>
+        </div>
+        <div style="font-size: 9px; color: #64748b; margin-top: 4px;">Glatte Kurve</div>
+      </div>
+      <div style="color: #8b5cf6; font-size: 20px; animation: pulse 1.5s infinite;">→</div>
+      <div style="text-align: center;">
+        <div style="width: 80px; height: 50px; border: 1px solid #334155; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 3px; flex-wrap: wrap; padding: 6px;">
+          <div style="width: 4px; height: 4px; background: #22d3ee; border-radius: 50%;"></div>
+          <div style="width: 4px; height: 4px; background: #22d3ee; border-radius: 50%;"></div>
+          <div style="width: 4px; height: 4px; background: #22d3ee; border-radius: 50%;"></div>
+          <div style="width: 4px; height: 4px; background: #22d3ee; border-radius: 50%;"></div>
+          <div style="width: 4px; height: 4px; background: #22d3ee; border-radius: 50%;"></div>
+          <div style="width: 4px; height: 4px; background: #22d3ee; border-radius: 50%;"></div>
+          <div style="width: 4px; height: 4px; background: #22d3ee; border-radius: 50%;"></div>
+          <div style="width: 4px; height: 4px; background: #22d3ee; border-radius: 50%;"></div>
+          <div style="width: 4px; height: 4px; background: #22d3ee; border-radius: 50%;"></div>
+          <div style="width: 4px; height: 4px; background: #8b5cf6; border-radius: 50%;"></div>
+          <div style="width: 4px; height: 4px; background: #22d3ee; border-radius: 50%;"></div>
+          <div style="width: 4px; height: 4px; background: #22d3ee; border-radius: 50%;"></div>
+        </div>
+        <div style="font-size: 9px; color: #64748b; margin-top: 4px;">Diskrete Punkte</div>
+      </div>
+      <div style="color: #8b5cf6; font-size: 20px;">→</div>
+      <div style="text-align: center;">
+        <div style="padding: 8px 12px; border: 1px solid #22d3ee; border-radius: 6px; background: rgba(34,211,238,0.05);">
+          <div style="font-size: 10px; color: #64748b;">Private Key</div>
+          <div style="font-size: 12px; color: #22d3ee; font-family: monospace;">n = 7</div>
+        </div>
+        <div style="font-size: 9px; color: #64748b; margin-top: 4px;">Schlüssel</div>
+      </div>
+    </div>
+  </div>
+  <p style="font-size: 13px; color: #94a3b8; margin-top: 8px;">GSAP-Timeline: Kurve fragmentiert → Punkte-Raster → Skalar animiert ins Private-Key-Feld → echte secp256k1-Berechnung startet.</p>
+</div>
+
+<!-- Shared State Architecture -->
+<div class="section">
+  <h3>5. Architektur: Shared State</h3>
+  <div style="padding: 12px; background: #111827; border-radius: 6px; font-family: monospace; font-size: 12px; color: #94a3b8; line-height: 1.8;">
+    <div><span style="color: #8b5cf6;">EllipticCurvesVisualizer</span> (State-Owner)</div>
+    <div style="padding-left: 16px;">├─ <span style="color: #22d3ee;">placedPoints[]</span> → Tab 1 setzt, Tab 2 liest</div>
+    <div style="padding-left: 16px;">├─ <span style="color: #22d3ee;">additionResult</span> → Tab 2 setzt, Tab 3 liest (Basispunkt)</div>
+    <div style="padding-left: 16px;">├─ <span style="color: #22d3ee;">scalar</span> → Tab 3 setzt, Tab 4 liest (Private Key)</div>
+    <div style="padding-left: 16px;">├─ <span style="color: #f59e0b;">unlockedTabs</span> → Set&lt;1|2|3|4&gt;</div>
+    <div style="padding-left: 16px;">└─ <span style="color: #f59e0b;">completionCriteria</span> → pro Tab tracken</div>
+  </div>
+  <p style="font-size: 13px; color: #94a3b8; margin-top: 8px;">State wird im übergeordneten <code>EllipticCurvesVisualizer</code> gehalten und per Props an die Tabs weitergegeben. Kein Context/Store nötig.</p>
+</div>
+
+<div style="margin-top: 24px; padding: 16px; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); border-radius: 8px;">
+  <h3 style="color: #10b981; margin-top: 0;">Passt das so?</h3>
+  <p style="color: #94a3b8; margin-bottom: 0;">Wenn alles stimmig aussieht, sage "Ja" im Terminal und ich schreibe die Spec + den Implementierungsplan.</p>
+</div>

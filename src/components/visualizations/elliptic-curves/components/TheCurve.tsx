@@ -1,13 +1,18 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import CurveCanvas from "./CurveCanvas";
 import { snapToCurve } from "../curve-math";
 import { POINT_COLORS, MAX_PLACED_POINTS, CURVE_X_MIN_REAL } from "../constants";
 import type { CurvePoint2D, CanvasPoint } from "../types";
 
-export default function TheCurve() {
-  const [placedPoints, setPlacedPoints] = useState<CurvePoint2D[]>([]);
+interface TheCurveProps {
+  placedPoints: CurvePoint2D[];
+  onPointsChange: (points: CurvePoint2D[]) => void;
+  footer?: React.ReactNode;
+}
+
+export default function TheCurve({ placedPoints, onPointsChange, footer }: TheCurveProps) {
 
   const handleClick = useCallback(
     (mathPoint: CurvePoint2D) => {
@@ -20,9 +25,9 @@ export default function TheCurve() {
       const snapped = snapToCurve(mathPoint.x, preferPositive);
       if (!snapped) return;
 
-      setPlacedPoints((prev) => [...prev, snapped]);
+      onPointsChange([...placedPoints, snapped]);
     },
-    [placedPoints.length]
+    [placedPoints, onPointsChange]
   );
 
   const canvasPoints: CanvasPoint[] = placedPoints.map((p, i) => ({
@@ -32,22 +37,22 @@ export default function TheCurve() {
   }));
 
   return (
-    <div className="space-y-4">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_320px]">
       <CurveCanvas points={canvasPoints} onCanvasClick={handleClick} />
 
-      {/* Equation */}
-      <div className="rounded-lg border border-border-subtle bg-bg-card p-4 text-center">
-        <p className="font-display text-lg text-accent-primary">
-          y² = x³ + 7
-        </p>
-        <p className="mt-1 text-xs text-text-muted">
-          secp256k1 — die elliptische Kurve hinter Bitcoin
-        </p>
-      </div>
+      <div className="space-y-4 max-lg:contents">
+        {/* Equation */}
+        <div className="rounded-lg border border-border-subtle bg-bg-card p-4 text-center">
+          <p className="font-display text-lg text-accent-primary">
+            y² = x³ + 7
+          </p>
+          <p className="mt-1 text-xs text-text-muted">
+            secp256k1 — die elliptische Kurve hinter Bitcoin
+          </p>
+        </div>
 
-      {/* Info + Reset */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="rounded-lg border border-border-subtle bg-bg-card p-4 text-sm text-text-secondary sm:flex-1">
+        {/* Info */}
+        <div className="rounded-lg border border-border-subtle bg-bg-card p-4 text-sm text-text-secondary">
           <p className="mb-2 font-display text-xs font-medium uppercase tracking-wider text-accent-primary">
             Hinweis
           </p>
@@ -61,18 +66,21 @@ export default function TheCurve() {
           </p>
         </div>
 
-        <div className="flex flex-col items-end gap-2">
+        {/* Points + Reset */}
+        <div className="flex items-center justify-between rounded-lg border border-border-subtle bg-bg-card p-4">
           <p className="text-xs text-text-muted">
             {placedPoints.length}/{MAX_PLACED_POINTS} Punkte gesetzt
           </p>
           <button
-            onClick={() => setPlacedPoints([])}
+            onClick={() => onPointsChange([])}
             disabled={placedPoints.length === 0}
             className="rounded-lg border border-border-subtle bg-bg-card px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-card-hover hover:text-text-primary disabled:opacity-40 disabled:hover:bg-bg-card"
           >
             Zurücksetzen
           </button>
         </div>
+
+        {footer}
       </div>
     </div>
   );

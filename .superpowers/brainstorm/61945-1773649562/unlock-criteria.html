@@ -1,0 +1,61 @@
+<h2>Was schaltet den nächsten Tab frei?</h2>
+<p class="subtitle">Jeder Tab braucht eine klare "Fertig"-Bedingung, die den nächsten Schritt freischaltet. Was fühlt sich richtig an?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Minimale Interaktion</h3>
+      <p>Einfache Aktionen reichen zum Freischalten — der User soll nicht blockiert werden:</p>
+      <table style="font-size: 13px; color: #94a3b8; width: 100%; border-collapse: collapse; margin-top: 8px;">
+        <tr style="border-bottom: 1px solid #1e293b;">
+          <td style="padding: 6px 0; color: #22d3ee;">Tab 1 → 2</td>
+          <td style="padding: 6px 0;">Mindestens 1 Punkt auf die Kurve setzen</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #1e293b;">
+          <td style="padding: 6px 0; color: #22d3ee;">Tab 2 → 3</td>
+          <td style="padding: 6px 0;">Einmal die Konstruktion (P+Q) abspielen</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px 0; color: #22d3ee;">Tab 3 → 4</td>
+          <td style="padding: 6px 0;">Einen Skalar wählen (Slider bewegen)</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Vertiefte Interaktion</h3>
+      <p>Der User muss das Feature wirklich erkundet haben:</p>
+      <table style="font-size: 13px; color: #94a3b8; width: 100%; border-collapse: collapse; margin-top: 8px;">
+        <tr style="border-bottom: 1px solid #1e293b;">
+          <td style="padding: 6px 0; color: #8b5cf6;">Tab 1 → 2</td>
+          <td style="padding: 6px 0;">Mindestens 2 Punkte setzen + Infotext gelesen (Scroll-Trigger)</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #1e293b;">
+          <td style="padding: 6px 0; color: #8b5cf6;">Tab 2 → 3</td>
+          <td style="padding: 6px 0;">P+Q abspielen + P oder Q einmal draggen</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px 0; color: #8b5cf6;">Tab 3 → 4</td>
+          <td style="padding: 6px 0;">Slider bewegen + Schritt-für-Schritt-Modus einmal starten</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Expliziter "Weiter"-Button</h3>
+      <p>Statt automatischem Freischalten: Nach der minimalen Interaktion (wie A) erscheint ein animierter <strong>"Weiter →"</strong>-Button am unteren Rand des Tabs. Klick darauf wechselt zum nächsten Tab und schaltet ihn frei.</p>
+      <div style="margin-top: 12px; display: flex; justify-content: flex-end;">
+        <div style="padding: 8px 20px; background: linear-gradient(135deg, #22d3ee, #8b5cf6); border-radius: 8px; color: #0a0e17; font-weight: 600; font-size: 13px; cursor: pointer;">
+          Weiter: Punkt-Addition →
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

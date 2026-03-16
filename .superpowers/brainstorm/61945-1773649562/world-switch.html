@@ -1,0 +1,46 @@
+<h2>Weltenwechsel: Tab 3 → Tab 4</h2>
+<p class="subtitle">Der Übergang von reellen Zahlen zu echtem secp256k1 ist der spannendste Moment. Wie soll er sich anfühlen?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Übergangs-Animation im Canvas</h3>
+      <p>Wenn Tab 4 freigeschaltet wird, spielt eine kurze Animation: Die glatte Kurve aus Tab 3 "zerbricht" in diskrete Punkte (Raster), der Skalar n wandert visuell in ein "Private Key"-Feld, und der Text erklärt:</p>
+      <div style="margin-top: 8px; padding: 12px; background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.15); border-radius: 6px; font-size: 13px; color: #94a3b8; font-style: italic;">
+        "Gleiche Gleichung, gleiche Operationen — aber jetzt über einem endlichen Körper mit 2²⁵⁶ Elementen. Dein Skalar n = <span style="color: #22d3ee;">7</span> wird zum Private Key."
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Split-Screen Vergleich</h3>
+      <p>Tab 4 startet mit einem kurzen Side-by-Side: Links die reelle Kurve mit dem Ergebnis aus Tab 3, rechts das secp256k1-Ergebnis mit gleichen Skalar. Dann blendet die linke Seite aus und Tab 4 (Schlüsselerzeugung) übernimmt.</p>
+      <div style="margin-top: 8px; display: flex; gap: 8px;">
+        <div style="flex: 1; padding: 10px; border: 1px solid #334155; border-radius: 6px; text-align: center; font-size: 11px;">
+          <div style="color: #64748b; margin-bottom: 4px;">Reelle Zahlen</div>
+          <div style="color: #22d3ee;">n=7 × P = (2.31, -4.78)</div>
+        </div>
+        <div style="display: flex; align-items: center; color: #8b5cf6; font-size: 18px;">⟹</div>
+        <div style="flex: 1; padding: 10px; border: 1px solid #8b5cf6; border-radius: 6px; text-align: center; font-size: 11px; background: rgba(139,92,246,0.05);">
+          <div style="color: #8b5cf6; margin-bottom: 4px;">secp256k1 (mod p)</div>
+          <div style="color: #22d3ee;">n=7 × G = (5cb...f28)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Einfacher Text-Übergang</h3>
+      <p>Kein spezieller Übergangseffekt. Tab 4 beginnt mit einem Info-Banner das den Skalar aus Tab 3 referenziert und erklärt, warum jetzt echte Kryptografie kommt. Schlicht, aber klar.</p>
+      <div style="margin-top: 8px; padding: 10px; background: rgba(34,211,238,0.06); border-left: 3px solid #22d3ee; font-size: 12px; color: #94a3b8;">
+        Du hast in Tab 3 gesehen: <strong style="color: #22d3ee;">7 × P</strong> über reellen Zahlen.<br>
+        Jetzt das Gleiche mit echtem secp256k1 — hier wird dein Skalar zum Private Key.
+      </div>
+    </div>
+  </div>
+</div>
