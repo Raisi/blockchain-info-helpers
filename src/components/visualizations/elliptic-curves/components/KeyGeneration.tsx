@@ -34,6 +34,7 @@ export default function KeyGeneration({
   const [publicKeyY, setPublicKeyY] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [showParams, setShowParams] = useState(false);
+  const [pubKeyPoint, setPubKeyPoint] = useState<{ x: number; y: number } | null>(null);
 
   const [phase, setPhase] = useState<Phase>(
     showWorldSwitch ? "animating" : "done"
@@ -63,6 +64,57 @@ export default function KeyGeneration({
       return null;
     }
   })();
+
+  // Draw highlighted public key point on canvas
+  const drawHighlightedPoint = useCallback(
+    (canvas: HTMLCanvasElement, point: { x: number; y: number }) => {
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas.width / dpr;
+      const h = canvas.height / dpr;
+
+      const px = ((point.x - CURVE_X_RANGE[0]) / (CURVE_X_RANGE[1] - CURVE_X_RANGE[0])) * w;
+      const py = ((CURVE_Y_RANGE[1] - point.y) / (CURVE_Y_RANGE[1] - CURVE_Y_RANGE[0])) * h;
+
+      ctx.save();
+      ctx.scale(dpr, dpr);
+
+      // Outer glow ring
+      ctx.beginPath();
+      ctx.arc(px, py, 14, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(16, 185, 129, 0.15)";
+      ctx.fill();
+
+      // Middle ring
+      ctx.beginPath();
+      ctx.arc(px, py, 8, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(16, 185, 129, 0.3)";
+      ctx.fill();
+
+      // Core dot
+      ctx.beginPath();
+      ctx.arc(px, py, 4, 0, Math.PI * 2);
+      ctx.fillStyle = "#10b981";
+      ctx.fill();
+      ctx.strokeStyle = "#0a0e17";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Label
+      ctx.fillStyle = "#10b981";
+      ctx.font = "bold 11px JetBrains Mono, monospace";
+      ctx.textAlign = "left";
+      ctx.fillText("k × G", px + 16, py - 4);
+      ctx.font = "10px JetBrains Mono, monospace";
+      ctx.fillStyle = "#94a3b8";
+      ctx.fillText("Public Key", px + 16, py + 10);
+
+      ctx.restore();
+    },
+    []
+  );
 
   // Draw fragmented dots on a canvas
   const drawFragmentedDots = useCallback(
@@ -113,16 +165,22 @@ export default function KeyGeneration({
       canvas.height = h * dpr;
       canvas.style.width = `${w}px`;
       canvas.style.height = `${h}px`;
-      if (phase === "done") drawFragmentedDots(canvas);
+      if (phase === "done") {
+        drawFragmentedDots(canvas);
+        if (pubKeyPoint) drawHighlightedPoint(canvas, pubKeyPoint);
+      }
     };
 
     const ro = new ResizeObserver(() => resize());
     ro.observe(parent);
     resize();
-    if (phase === "done") drawFragmentedDots(canvas);
+    if (phase === "done") {
+      drawFragmentedDots(canvas);
+      if (pubKeyPoint) drawHighlightedPoint(canvas, pubKeyPoint);
+    }
 
     return () => ro.disconnect();
-  }, [phase, drawFragmentedDots]);
+  }, [phase, drawFragmentedDots, pubKeyPoint, drawHighlightedPoint]);
 
   // Animation timeline (~4s)
   const runAnimation = useCallback(() => {
@@ -243,6 +301,7 @@ export default function KeyGeneration({
 
   const generate = useCallback(() => {
     setIsGenerating(true);
+    setPubKeyPoint(null);
 
     setTimeout(() => {
       const privKey = generatePrivateKey();
@@ -253,6 +312,12 @@ export default function KeyGeneration({
       setPublicKeyX(pubKey.x);
       setPublicKeyY(pubKey.y);
       setIsGenerating(false);
+
+      // Pick a random curve point as visual representative for the public key
+      const curveData = getCurvePoints(CURVE_X_RANGE[0], CURVE_X_RANGE[1], 200);
+      const allPoints = [...curveData.upper, ...curveData.lower];
+      const randomPoint = allPoints[Math.floor(Math.random() * allPoints.length)];
+      setPubKeyPoint(randomPoint);
 
       const ctx = gsap.context(() => {
         if (privRef.current) {
@@ -286,6 +351,28 @@ export default function KeyGeneration({
       return () => ctx.revert();
     }, 100);
   }, []);
+
+  // Redraw canvas with highlight when pubKeyPoint changes
+  useEffect(() => {
+    if (!pubKeyPoint || phase !== "done") return;
+    const canvas = fragmentCanvasRef.current;
+    if (!canvas) return;
+
+    drawFragmentedDots(canvas);
+    drawHighlightedPoint(canvas, pubKeyPoint);
+
+    gsap.fromTo(
+      canvas,
+      { filter: "brightness(1)" },
+      {
+        filter: "brightness(1.2)",
+        duration: 0.3,
+        yoyo: true,
+        repeat: 1,
+        ease: "power2.inOut",
+      }
+    );
+  }, [pubKeyPoint, phase, drawFragmentedDots, drawHighlightedPoint]);
 
   // Hex cascade animation for private key display
   const [displayHex, setDisplayHex] = useState("");
@@ -360,7 +447,7 @@ export default function KeyGeneration({
             className="flex items-center justify-center"
           >
             <div className="rounded-lg border border-border-subtle bg-bg-card px-3 py-2 text-center">
-              <p className="font-display text-lg text-accent-primary">&times;G</p>
+              <p className="font-display text-lg text-accent-primary">k &times; G</p>
               <p className="text-[10px] text-text-muted">k &times; Generator</p>
             </div>
           </div>
@@ -506,7 +593,7 @@ export default function KeyGeneration({
   return (
     <div ref={containerRef} className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_320px]">
       {/* LEFT: Canvas with fragment overlay */}
-      <div className="relative">
+      <div className="relative self-start">
         <div
           ref={curveWrapperRef}
           style={phase === "done" ? { opacity: 0 } : undefined}

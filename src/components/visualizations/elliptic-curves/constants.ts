@@ -17,7 +17,7 @@ export const EC_TABS: TabConfig[] = [
     id: "scalar",
     label: "Skalarmultiplikation",
     description:
-      "nP = P + P + … + P via Double-and-Add. Der Slider steuert n, der Schrittmodus zeigt jeden einzelnen Double- und Add-Schritt.",
+      "Das Ergebnis R aus der Punkt-Addition wird zum Basispunkt P. Skalarmultiplikation wiederholt die Addition aus Tab 2: n × P = P + P + … + P. Der Schrittmodus zeigt den effizienten Double-and-Add-Algorithmus.",
   },
   {
     id: "keygen",

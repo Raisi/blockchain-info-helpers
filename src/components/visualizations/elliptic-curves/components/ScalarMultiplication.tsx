@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import CurveCanvas from "./CurveCanvas";
 import { computeDoubleAndAddSteps, snapToCurve } from "../curve-math";
 import { SCALAR_MIN, SCALAR_MAX, SCALAR_DEFAULT } from "../constants";
-import type { CurvePoint2D, CanvasPoint } from "../types";
+import type { CurvePoint2D, CanvasPoint, CanvasLine } from "../types";
 
 const FALLBACK_BASE: CurvePoint2D = snapToCurve(1, true) ?? { x: 1, y: 2.828 };
 
@@ -74,29 +74,54 @@ export default function ScalarMultiplication({
     setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
   }, [steps.length]);
 
-  // Build canvas points
+  // Build canvas points and lines
   const canvasPoints: CanvasPoint[] = [
     { point: effectiveBase, color: "#22d3ee", label: "P" },
   ];
+  const canvasLines: CanvasLine[] = [];
 
   if (isStepMode) {
     // Show intermediate steps up to currentStep
     for (let i = 1; i <= currentStep && i < steps.length; i++) {
       const s = steps[i];
       const isLast = i === currentStep;
+
+      // Connect consecutive points with colored lines
+      const prev = i === 1 ? effectiveBase : steps[i - 1].intermediate;
+      canvasLines.push({
+        from: prev,
+        to: s.intermediate,
+        color: s.operation === "double" ? "#f59e0b55" : "#8b5cf655",
+        dashed: s.operation === "double",
+        width: 1,
+      });
+
       canvasPoints.push({
         point: s.intermediate,
         color: s.operation === "double" ? "#f59e0b" : "#8b5cf6",
-        label: isLast ? `${i}` : undefined,
+        label: isLast
+          ? `${s.operation === "double" ? "D" : "A"}${i}`
+          : undefined,
         radius: isLast ? 6 : 4,
+        pulse: isLast,
       });
     }
   } else if (finalResult) {
+    // Dashed line from P to nP in normal mode
+    canvasLines.push({
+      from: effectiveBase,
+      to: finalResult,
+      color: "#22d3ee33",
+      dashed: true,
+      width: 1,
+    });
+
     canvasPoints.push({
       point: finalResult,
       color: "#10b981",
       label: `${scalar}P`,
       radius: 7,
+      pulse: true,
     });
   }
 
@@ -104,37 +129,53 @@ export default function ScalarMultiplication({
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_320px]">
-      <CurveCanvas points={canvasPoints} />
+      <CurveCanvas points={canvasPoints} lines={canvasLines} />
 
       <div className="space-y-4 max-lg:contents">
-        {/* Instructions */}
+        {/* Connection to Tab 2 explainer */}
         <div className="rounded-lg border border-border-subtle bg-bg-card p-4 text-sm text-text-secondary">
           <p className="mb-2 font-display text-xs font-medium uppercase tracking-wider text-accent-primary">
-            Anleitung
+            Von Addition zu Multiplikation
           </p>
-          <ul className="list-inside list-disc space-y-1">
-            <li>Bewege den <span className="text-text-primary">Slider</span>, um n &times; P zu berechnen</li>
-            <li>Beobachte, wie sich das Ergebnis auf der Kurve bewegt</li>
-            <li>Optional: Aktiviere den Schrittmodus f&uuml;r Details</li>
-          </ul>
+          <p>
+            In Tab 2 hast du gelernt:{" "}
+            <span className="text-text-primary">P + Q = R</span> (Addition zweier Punkte).
+          </p>
+          <p className="mt-2">
+            Hier wiederholen wir diese Addition{" "}
+            <span className="text-text-primary">mit sich selbst</span>:
+          </p>
+          <p className="mt-1 font-mono text-text-primary">
+            n &times; P = P + P + P + &hellip; (n mal)
+          </p>
+          <p className="mt-2 text-text-muted">
+            Der Slider steuert n. Jeder Schritt verwendet dieselbe Punkt-Addition aus Tab 2.
+          </p>
         </div>
 
         {/* Base point hint */}
         {basePoint && (
-          <div className="rounded-lg border border-accent-primary/20 bg-accent-primary/5 px-4 py-2 text-sm text-accent-primary">
-            Basispunkt G = R aus der Addition ({basePoint.x.toFixed(2)},{" "}
-            {basePoint.y.toFixed(2)})
+          <div className="rounded-lg border border-accent-primary/20 bg-accent-primary/5 px-4 py-3 text-sm">
+            <p className="text-accent-primary">
+              Basispunkt P ={" "}
+              <span className="font-mono">
+                ({basePoint.x.toFixed(2)}, {basePoint.y.toFixed(2)})
+              </span>
+            </p>
+            <p className="mt-1 text-xs text-text-muted">
+              = R aus Tab 2 (Ergebnis deiner Punkt-Addition P + Q)
+            </p>
           </div>
         )}
 
         {/* Scalar slider */}
         <div className="rounded-lg border border-border-subtle bg-bg-card p-4">
-          <div className="flex items-center justify-between">
+          <div className="mb-2 flex items-baseline justify-between">
             <label className="font-display text-sm text-text-primary">
               n = {scalar}
             </label>
-            <span className="font-mono text-xs text-text-muted">
-              {scalar}P = P {"+P".repeat(scalar - 1)}
+            <span className="font-display text-sm text-accent-primary">
+              {scalar} &times; P
             </span>
           </div>
           <input
@@ -154,12 +195,38 @@ export default function ScalarMultiplication({
             <span>{SCALAR_MIN}</span>
             <span>{SCALAR_MAX}</span>
           </div>
+
+          {/* Visual addition chain */}
+          <div className="mt-3 flex flex-wrap items-center gap-1 font-mono text-xs">
+            {Array.from({ length: Math.min(scalar, 8) }, (_, i) => (
+              <span key={i} className="flex items-center gap-1">
+                {i > 0 && <span className="text-text-muted">+</span>}
+                <span className="text-accent-primary">P</span>
+              </span>
+            ))}
+            {scalar > 8 && <span className="text-text-muted">&hellip; +P</span>}
+            <span className="text-text-muted">=</span>
+            <span className="text-accent-success font-semibold">{scalar}P</span>
+          </div>
+
           {!hasMovedSlider && (
             <p className="mt-2 text-xs text-accent-warning animate-pulse">
               &uarr; Bewege den Slider, um fortzufahren
             </p>
           )}
         </div>
+
+        {/* Result coordinates in normal mode */}
+        {!isStepMode && finalResult && hasMovedSlider && (
+          <div className="rounded-lg border border-accent-success/20 bg-accent-success/5 px-4 py-3">
+            <p className="font-mono text-xs text-accent-success">
+              {scalar} &times; P = {scalar} &times; ({effectiveBase.x.toFixed(2)}, {effectiveBase.y.toFixed(2)})
+            </p>
+            <p className="mt-1 font-mono text-sm font-semibold text-accent-success">
+              = ({finalResult.x.toFixed(3)}, {finalResult.y.toFixed(3)})
+            </p>
+          </div>
+        )}
 
         {/* Step mode toggle + controls */}
         <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border-subtle bg-bg-card p-4">
