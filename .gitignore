@@ -2,6 +2,7 @@
 /node_modules
 /generated_artifacts
 /concept-images
+/.superpowers
 /.claude/**/*
 /.pnp
 .pnp.*

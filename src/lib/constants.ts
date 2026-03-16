@@ -20,6 +20,7 @@ export const TOPICS: readonly Topic[] = [
     icon: "curve",
     category: "fundamentals",
     order: 2,
+    available: true,
   },
   {
     slug: "merkle-trees",
