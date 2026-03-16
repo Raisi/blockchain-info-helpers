@@ -6,7 +6,7 @@ Flash when clicking page change first time
 - add more themes
 - add Concept of Borderwallet
 
-CLAUDE_CODE_MAX_OUTPUT_TOKENS=64000 claude --resume 7594af53-6a87-45f1-890f-7826cc9d07f2
+CLAUDE_CODE_MAX_OUTPUT_TOKENS=64000 claude --resume 796aa5c7-023f-4775-a3cb-f73dd53fe6e6
 
 
 /plugin marketplace add anthropics/claude-code
