@@ -88,7 +88,7 @@ export function HashToBech32Pipeline({
       >
         <div className="mb-1 flex items-center justify-between">
           <span className="font-code text-xs font-bold uppercase tracking-wider text-accent-secondary">
-            HASH160
+            Hash160
           </span>
           <span className="rounded bg-accent-secondary/10 px-1.5 py-0.5 font-code text-[10px] text-accent-secondary">
             20 Bytes

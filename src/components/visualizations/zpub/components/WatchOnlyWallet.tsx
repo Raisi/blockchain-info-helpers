@@ -35,7 +35,7 @@ export function WatchOnlyWallet() {
       {/* Security Boundary Diagram */}
       <div data-zpub-animate className="mb-6">
         <div className="mb-3 font-code text-xs font-bold uppercase tracking-[2px] text-text-muted">
-          SECURITY BOUNDARY
+          Security Boundary
         </div>
         <div className="grid grid-cols-[1fr_auto_1fr] gap-0 rounded-xl border border-border-subtle bg-bg-primary overflow-hidden">
           {/* zpub Side */}
@@ -89,7 +89,7 @@ export function WatchOnlyWallet() {
         {/* KANN */}
         <div className="rounded-xl border border-accent-success/30 bg-accent-success/5 p-4">
           <div className="mb-3 font-code text-xs font-bold uppercase tracking-[2px] text-accent-success">
-            KANN ✓
+            Kann ✓
           </div>
           <div className="space-y-2">
             {[
@@ -114,7 +114,7 @@ export function WatchOnlyWallet() {
         {/* KANN NICHT */}
         <div className="rounded-xl border border-accent-danger/30 bg-accent-danger/5 p-4">
           <div className="mb-3 font-code text-xs font-bold uppercase tracking-[2px] text-accent-danger">
-            KANN NICHT ✗
+            Kann nicht ✗
           </div>
           <div className="space-y-2">
             {[
@@ -140,7 +140,7 @@ export function WatchOnlyWallet() {
       {/* Use Cases */}
       <div data-zpub-animate className="mt-6">
         <div className="mb-3 font-code text-xs font-bold uppercase tracking-[2px] text-text-muted">
-          REAL-WORLD USE CASES
+          Real-World Use Cases
         </div>
         <div className="space-y-2">
           {[

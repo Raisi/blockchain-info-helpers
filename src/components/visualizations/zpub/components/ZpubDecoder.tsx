@@ -29,7 +29,7 @@ export function ZpubDecoder({ onDecoded }: ZpubDecoderProps) {
   return (
     <div className="rounded-xl border border-border-subtle bg-bg-card p-5">
       <div className="mb-3 font-code text-xs font-bold uppercase tracking-[2px] text-text-muted">
-        EIGENEN ZPUB DECODIEREN
+        Eigenen zpub decodieren
       </div>
       <div className="flex gap-2">
         <input

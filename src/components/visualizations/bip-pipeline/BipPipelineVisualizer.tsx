@@ -826,7 +826,7 @@ function Bip44Step({
         <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
           <div className="rounded-xl border border-accent-success/40 bg-bg-primary p-5">
             <div className="mb-3 font-code text-[13px] font-bold uppercase tracking-wider text-accent-success">
-              PRIVATE KEY (32 Bytes)
+              Private Key (32 Bytes)
             </div>
             <div className="break-all leading-8">
               {splitHex(toHex(fk.priv), 8).map((c, i) => (
@@ -841,7 +841,7 @@ function Bip44Step({
           </div>
           <div className="rounded-xl border border-accent-primary/40 bg-bg-primary p-5">
             <div className="mb-3 font-code text-[13px] font-bold uppercase tracking-wider text-accent-primary">
-              CHAIN CODE (32 Bytes)
+              Chain Code (32 Bytes)
             </div>
             <div className="break-all leading-8">
               {splitHex(toHex(fk.chain), 8).map((c, i) => (

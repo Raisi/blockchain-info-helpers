@@ -4,7 +4,7 @@ export function HardenedComparison() {
   return (
     <div className="mt-6">
       <div className="mb-3 font-code text-xs font-bold uppercase tracking-[2px] text-text-muted">
-        HARDENED vs. NON-HARDENED
+        Hardened vs. Non-Hardened
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {/* Hardened */}

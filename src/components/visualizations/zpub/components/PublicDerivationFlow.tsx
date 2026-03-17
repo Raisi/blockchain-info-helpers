@@ -59,7 +59,7 @@ export function PublicDerivationFlow({
     <div ref={flowRef}>
       <div data-flow-animate className="mb-4">
         <div className="mb-2 font-code text-[10px] font-bold uppercase tracking-[2px] text-text-muted">
-          CHILD INDEX
+          Child Index
         </div>
         <div className="flex items-center gap-3">
           <input
@@ -112,7 +112,7 @@ export function PublicDerivationFlow({
           {/* HMAC-SHA512 */}
           <div data-flow-animate className="rounded-xl border border-accent-secondary/30 bg-accent-secondary/5 p-4">
             <div className="mb-1 font-code text-[10px] font-bold uppercase tracking-wider text-accent-secondary">
-              HMAC-SHA512 OUTPUT (64 Bytes)
+              HMAC-SHA512 Output (64 Bytes)
             </div>
             <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
               <div className="rounded-lg border border-accent-secondary/20 bg-bg-primary p-2">
@@ -140,7 +140,7 @@ export function PublicDerivationFlow({
           {/* Point Addition */}
           <div data-flow-animate className="rounded-xl border border-[#34d399]/30 bg-[#34d399]/5 p-4">
             <div className="mb-3 font-code text-[10px] font-bold uppercase tracking-wider text-[#34d399]">
-              EC POINT ADDITION
+              EC Point Addition
             </div>
 
             {/* 3-row breakdown */}

@@ -9,7 +9,7 @@ export function VersionComparison() {
   return (
     <div className="mt-6">
       <div className="mb-3 font-code text-xs font-bold uppercase tracking-[2px] text-text-muted">
-        VERSION-BYTE VERGLEICH
+        Version-Byte Vergleich
       </div>
       <div className="mb-3 flex gap-1.5">
         {VERSION_BYTES.map((v) => (
