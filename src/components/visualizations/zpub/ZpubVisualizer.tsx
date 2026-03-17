@@ -168,6 +168,31 @@ export default function ZpubVisualizer() {
                 </div>
 
                 <div data-zpub-animate>
+                  <Label>DERIVATION PATH</Label>
+                  <div className="rounded-xl border border-accent-secondary/25 bg-accent-secondary/[0.06] p-5">
+                    <pre className="font-code text-sm leading-[2] text-text-primary">
+{`m / 84' / 0' / 0'
+│    │     │    └─ Account #0 (hardened)
+│    │     └────── Coin: Bitcoin mainnet (hardened)
+│    └──────────── Purpose: BIP-84 / Native SegWit (hardened)
+└───────────────── Master Key (from seed)`}
+                    </pre>
+                    <div className="mt-3 space-y-1.5 text-[13px] leading-[1.7] text-text-secondary">
+                      <p>
+                        <strong className="text-accent-secondary">&apos;</strong> = Hardened
+                        Derivation — erfordert den Private Key und verhindert, dass
+                        ein kompromittierter Child Key den Parent Key verraten kann.
+                      </p>
+                      <p>
+                        Der zpub sitzt auf <strong className="text-white">Depth 3</strong> — alles
+                        darunter (Chain, Index) wird <strong className="text-[#34d399]">non-hardened</strong> abgeleitet,
+                        also nur mit dem Public Key + Chain Code.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div data-zpub-animate>
                   <Label>BASE58CHECK ENCODING</Label>
                   <div className="rounded-xl border border-[#fb7185]/30 bg-[#fb7185]/5 p-5">
                     <div className="mb-2 font-code text-[10px] tracking-wider text-text-muted">
@@ -226,12 +251,50 @@ export default function ZpubVisualizer() {
             </div>
 
             {accountPubKey && accountChainCode && (
-              <div data-zpub-animate>
-                <PublicDerivationFlow
-                  accountPubKey={accountPubKey}
-                  accountChainCode={accountChainCode}
-                />
-              </div>
+              <>
+                <div data-zpub-animate>
+                  <div className="mb-5 rounded-xl border border-border-active bg-bg-card p-5">
+                    <div className="mb-3 font-code text-[10px] font-bold uppercase tracking-[2px] text-text-muted">
+                      Aus dem zpub (Schritt 2) extrahiert
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-3 rounded-lg border border-border-subtle bg-[#34d399]/10 p-3">
+                        <div className="w-[120px] flex-shrink-0 font-code text-xs font-bold text-[#34d399]">
+                          Public Key (33B)
+                        </div>
+                        <div className="flex-1 font-code text-xs text-[#34d399]">
+                          → parentPub
+                        </div>
+                        <div className="break-all font-code text-[10px] text-[#34d399]/70">
+                          0x{toHex(accountPubKey).slice(0, 16)}...
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 rounded-lg border border-border-subtle bg-accent-primary/10 p-3">
+                        <div className="w-[120px] flex-shrink-0 font-code text-xs font-bold text-accent-primary">
+                          Chain Code (32B)
+                        </div>
+                        <div className="flex-1 font-code text-xs text-accent-primary">
+                          → HMAC key
+                        </div>
+                        <div className="break-all font-code text-[10px] text-accent-primary/70">
+                          0x{toHex(accountChainCode).slice(0, 16)}...
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-3 text-xs leading-[1.7] text-text-muted">
+                      Der zpub kodiert diese 65 Bytes zusammen mit Metadaten — für die
+                      Ableitung zählen nur Public Key und Chain Code.
+                    </div>
+                  </div>
+                </div>
+
+                <div data-zpub-animate>
+                  <PublicDerivationFlow
+                    accountPubKey={accountPubKey}
+                    accountChainCode={accountChainCode}
+                  />
+                </div>
+              </>
             )}
 
             <div data-zpub-animate>
@@ -256,6 +319,22 @@ export default function ZpubVisualizer() {
                     (Chain → Index), dann HASH160 + Bech32 Encoding. Empfangs-
                     und Wechseladressen verwenden unterschiedliche Chain-Indizes.
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div data-zpub-animate>
+              <div className="mb-5 rounded-xl border border-accent-success/20 bg-accent-success/[0.04] p-5">
+                <div className="mb-2 font-code text-[10px] font-bold uppercase tracking-[2px] text-text-muted">
+                  Vollständiger Ableitungspfad
+                </div>
+                <pre className="font-code text-sm leading-[2] text-text-primary">
+{`m/84'/0'/0'  ← zpub (Schritt 2)
+     └─ /0   ← Chain (Empfang)       ← 1. Ableitung
+         └─ /i   ← Adress-Index      ← 2. Ableitung`}
+                </pre>
+                <div className="mt-2 text-xs text-text-muted">
+                  Beide Ableitungen sind non-hardened — sie brauchen nur den Public Key + Chain Code aus dem zpub.
                 </div>
               </div>
             </div>
