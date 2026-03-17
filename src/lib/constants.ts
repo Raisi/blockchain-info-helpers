@@ -89,6 +89,7 @@ export const TOPICS: readonly Topic[] = [
     icon: "seedling",
     category: "keys",
     order: 5,
+    available: true,
   },
 
   // === Transaktionen ===
