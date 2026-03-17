@@ -1,8 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { deriveAddressFromZpub, toHex, fmtHex } from "../crypto-utils";
+import { useState, useEffect, useRef } from "react";
+import { gsap } from "@/lib/gsap";
+import { deriveAddressFromZpub, toHex } from "../crypto-utils";
 import type { DerivedAddress } from "../types";
+import { AddressDerivationPipeline } from "./AddressDerivationPipeline";
+import { HashToBech32Pipeline } from "./HashToBech32Pipeline";
 
 interface AddressExplorerProps {
   accountPubKey: Uint8Array;
@@ -16,8 +19,10 @@ export function AddressExplorer({
   const [tab, setTab] = useState<"receive" | "change">("receive");
   const [maxIndex, setMaxIndex] = useState(5);
   const [addresses, setAddresses] = useState<DerivedAddress[]>([]);
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [computing, setComputing] = useState(false);
+  const pipelineRef = useRef<HTMLDivElement>(null);
+  const hasAnimated = useRef(false);
 
   useEffect(() => {
     setComputing(true);
@@ -28,8 +33,43 @@ export function AddressExplorer({
     Promise.all(promises).then((results) => {
       setAddresses(results);
       setComputing(false);
+      if (selectedIndex >= results.length) {
+        setSelectedIndex(0);
+      }
     });
   }, [accountPubKey, accountChainCode, tab, maxIndex]);
+
+  // Entrance animation — once when pipeline first appears
+  useEffect(() => {
+    if (!pipelineRef.current || addresses.length === 0 || hasAnimated.current)
+      return;
+    hasAnimated.current = true;
+    const ctx = gsap.context(() => {
+      gsap.from("[data-flow-animate]", {
+        y: 15,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.06,
+        ease: "power3.out",
+      });
+    }, pipelineRef);
+    return () => ctx.revert();
+  }, [addresses]);
+
+  // Value change animation when selected address changes
+  useEffect(() => {
+    if (!pipelineRef.current || !hasAnimated.current) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        "[data-value-animate]",
+        { opacity: 0.4 },
+        { opacity: 1, duration: 0.3, ease: "power2.out" }
+      );
+    }, pipelineRef);
+    return () => ctx.revert();
+  }, [selectedIndex]);
+
+  const selectedAddress = addresses[selectedIndex] ?? null;
 
   return (
     <div>
@@ -81,59 +121,88 @@ export function AddressExplorer({
       )}
 
       {/* Address List */}
-      <div className="space-y-1.5">
-        {addresses.map((addr) => (
-          <div key={`${addr.isChange}-${addr.index}`}>
+      <div className="mb-4 space-y-1.5">
+        {addresses.map((addr) => {
+          const isSelected = selectedIndex === addr.index;
+          return (
             <button
-              className="flex w-full items-center gap-3 rounded-lg border border-border-subtle bg-bg-primary p-3 text-left transition-all hover:border-border-active"
-              onClick={() =>
-                setExpandedIndex(
-                  expandedIndex === addr.index ? null : addr.index
-                )
-              }
+              key={`${addr.isChange}-${addr.index}`}
+              className={`flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-all ${
+                isSelected
+                  ? "border-accent-primary bg-accent-primary/10 shadow-[0_0_12px_rgba(34,211,238,0.1)]"
+                  : "border-border-subtle bg-bg-primary hover:border-border-active"
+              }`}
+              onClick={() => setSelectedIndex(addr.index)}
             >
-              <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded bg-accent-primary/10 font-code text-[10px] font-bold text-accent-primary">
+              <span
+                className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded font-code text-[10px] font-bold ${
+                  isSelected
+                    ? "bg-accent-primary/20 text-accent-primary"
+                    : "bg-accent-primary/10 text-accent-primary/60"
+                }`}
+              >
                 {addr.index}
               </span>
               <span className="font-code text-[10px] text-text-muted">
                 {addr.path}
               </span>
-              <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-code text-xs text-accent-primary">
+              <span
+                className={`flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-code text-xs ${
+                  isSelected ? "text-accent-primary" : "text-text-secondary"
+                }`}
+              >
                 {addr.address}
               </span>
-              <span className="text-xs text-text-muted">
-                {expandedIndex === addr.index ? "▲" : "▼"}
-              </span>
+              {isSelected && (
+                <span className="rounded bg-accent-primary/15 px-1.5 py-0.5 font-code text-[9px] text-accent-primary">
+                  selected
+                </span>
+              )}
             </button>
-
-            {expandedIndex === addr.index && (
-              <div className="mt-1 mb-2 rounded-lg border border-border-active bg-bg-card p-3 space-y-2">
-                <div>
-                  <div className="text-[10px] text-text-muted">Child Public Key</div>
-                  <div className="font-code text-[11px] text-[#34d399]">
-                    {toHex(addr.childPubKey)}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-[10px] text-text-muted">HASH160 (RIPEMD160(SHA256(pubkey)))</div>
-                  <div className="font-code text-[11px] text-accent-secondary">
-                    {toHex(addr.hash160)}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-[10px] text-text-muted">Bech32 Address</div>
-                  <div className="font-code text-[11px] text-accent-primary">
-                    {addr.address}
-                  </div>
-                </div>
-                <div className="rounded-lg bg-bg-primary p-2 text-[10px] text-text-muted">
-                  zpub → Account PubKey + Chain Code → Child PubKey → HASH160 → Bech32 → bc1q...
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
+
+      {/* Pipeline for selected address */}
+      {selectedAddress && (
+        <div ref={pipelineRef} className="space-y-4">
+          <div className="flex items-center gap-2 rounded-lg border border-border-subtle bg-bg-card p-3">
+            <span className="font-code text-[10px] text-text-muted">Startpunkt:</span>
+            <span className="font-code text-[10px] font-bold text-[#34d399]">
+              PubKey 0x{toHex(accountPubKey).slice(0, 10)}...
+            </span>
+            <span className="text-text-muted">+</span>
+            <span className="font-code text-[10px] font-bold text-accent-primary">
+              ChainCode 0x{toHex(accountChainCode).slice(0, 10)}...
+            </span>
+            <span className="font-code text-[10px] text-text-muted">(aus zpub)</span>
+          </div>
+
+          <div className="font-code text-[10px] font-bold uppercase tracking-[2px] text-text-muted">
+            Ableitungspipeline für Index {selectedAddress.index} (
+            {selectedAddress.path})
+          </div>
+
+          <AddressDerivationPipeline address={selectedAddress} />
+
+          {/* Arrow between pipelines */}
+          <div className="flex justify-center py-1">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full border border-border-active bg-bg-card text-text-muted">
+              ↓
+            </div>
+          </div>
+
+          <div className="font-code text-[10px] font-bold uppercase tracking-[2px] text-text-muted">
+            PubKey → Adresse
+          </div>
+
+          <HashToBech32Pipeline
+            childPubKey={selectedAddress.childPubKey}
+            hash160={selectedAddress.hash160}
+            address={selectedAddress.address}
+          />
+        </div>
+      )}
     </div>
   );
 }
