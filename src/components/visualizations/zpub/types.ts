@@ -34,3 +34,26 @@ export interface VersionInfo {
   addressType: string;
   bytes: Uint8Array;
 }
+
+export interface PublicChildDerivation {
+  parentPubKey: Uint8Array;
+  parentChainCode: Uint8Array;
+  index: number;
+  hmacData: Uint8Array;
+  hmacResult: Uint8Array;
+  IL: Uint8Array;
+  IR: Uint8Array;
+  childPubKey: Uint8Array;
+  childChainCode: Uint8Array;
+}
+
+export interface DerivedAddress {
+  index: number;
+  path: string;
+  childPubKey: Uint8Array;
+  hash160: Uint8Array;
+  address: string;
+  isChange: boolean;
+  chainDerivation: PublicChildDerivation;
+  addressDerivation: PublicChildDerivation;
+}

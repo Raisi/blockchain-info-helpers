@@ -3,33 +3,33 @@ import type { ZpubStep } from "./types";
 export const ZPUB_STEPS: ZpubStep[] = [
   {
     id: 1,
-    title: "Mnemonic → Seed",
-    description: "PBKDF2-HMAC-SHA512 (2048 Iterationen)",
-    color: "var(--accent-warning)",
-  },
-  {
-    id: 2,
-    title: "Seed → Master Keys",
-    description: 'HMAC-SHA512 mit Key "Bitcoin seed"',
-    color: "var(--accent-success)",
-  },
-  {
-    id: 3,
-    title: "Hardened Derivation (3×)",
-    description: "m/84'/0'/0' — Purpose → Coin → Account",
-    color: "var(--accent-secondary)",
-  },
-  {
-    id: 4,
     title: "Private → Public Key",
     description: "EC-Multiplikation auf secp256k1",
     color: "var(--accent-primary)",
   },
   {
-    id: 5,
-    title: "Serialisierung → zpub",
-    description: "78-Byte Struktur + SHA256² + Base58Check",
+    id: 2,
+    title: "Anatomie eines zpub",
+    description: "78-Byte Struktur + Base58Check Encoding",
     color: "#fb7185",
+  },
+  {
+    id: 3,
+    title: "Non-Hardened Derivation",
+    description: "Child Public Keys ohne Private Key ableiten",
+    color: "var(--accent-secondary)",
+  },
+  {
+    id: 4,
+    title: "Adress-Ableitung",
+    description: "Vom zpub zur bc1q-Adresse",
+    color: "var(--accent-success)",
+  },
+  {
+    id: 5,
+    title: "Watch-Only Wallet",
+    description: "Was ein zpub kann — und was nicht",
+    color: "var(--accent-warning)",
   },
 ];
 
