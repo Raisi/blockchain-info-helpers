@@ -15,7 +15,6 @@ CLAUDE_CODE_MAX_OUTPUT_TOKENS=64000 claude --resume 796aa5c7-023f-4775-a3cb-f73d
 ---
 
 ## Roadmap — Geplante Topics (Coming Soon)
-
 ### Grundlagen (`fundamentals`)
 
 - [x] **elliptic-curves** — Elliptische Kurven

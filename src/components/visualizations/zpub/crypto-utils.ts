@@ -3,7 +3,13 @@ import { ripemd160 } from "@noble/hashes/ripemd160";
 import { sha256 } from "@noble/hashes/sha256";
 import { base58 } from "@scure/base";
 import { bech32 } from "@scure/base";
-import type { DerivationLevel, SerializedKey, VersionInfo } from "./types";
+import type {
+  DerivationLevel,
+  DerivedAddress,
+  PublicChildDerivation,
+  SerializedKey,
+  VersionInfo,
+} from "./types";
 
 /** Cast Uint8Array to BufferSource for Web Crypto API (TS 5.7+ compat) */
 const asBuf = (u: Uint8Array): BufferSource => u as unknown as BufferSource;
@@ -310,6 +316,127 @@ async function normalChildDerive(
   const I = new Uint8Array(await crypto.subtle.sign("HMAC", key, asBuf(data)));
   const childPriv = addPrivateKeys(I.slice(0, 32), priv);
   return { priv: childPriv, chain: I.slice(32) };
+}
+
+/* ── Public-key-only child derivation (non-hardened) ── */
+
+export async function childDerivePublic(
+  parentPubKey: Uint8Array,
+  parentChainCode: Uint8Array,
+  index: number
+): Promise<PublicChildDerivation> {
+  if (index >= 0x80000000) {
+    throw new Error("childDerivePublic cannot derive hardened children");
+  }
+
+  // Data = parentPubKey (33 bytes) || index (4 bytes big-endian)
+  const data = new Uint8Array(37);
+  data.set(parentPubKey, 0);
+  new DataView(data.buffer).setUint32(33, index, false);
+
+  const key = await crypto.subtle.importKey(
+    "raw",
+    asBuf(parentChainCode),
+    { name: "HMAC", hash: "SHA-512" },
+    false,
+    ["sign"]
+  );
+  const I = new Uint8Array(await crypto.subtle.sign("HMAC", key, asBuf(data)));
+
+  const IL = I.slice(0, 32);
+  const IR = I.slice(32);
+
+  // Child public key = point(IL) + parentPubKey
+  const ilPoint = secp256k1.ProjectivePoint.fromPrivateKey(IL);
+  const parentPoint = secp256k1.ProjectivePoint.fromHex(parentPubKey);
+  const childPoint = ilPoint.add(parentPoint);
+  const childPubKey = childPoint.toRawBytes(true); // compressed
+
+  return {
+    parentPubKey,
+    parentChainCode,
+    index,
+    hmacData: data,
+    hmacResult: I,
+    IL,
+    IR,
+    childPubKey,
+    childChainCode: IR,
+  };
+}
+
+/* ── Decode zpub string ── */
+
+export function decodeZpub(zpubString: string): SerializedKey {
+  const full82 = base58.decode(zpubString);
+  if (full82.length !== 82) {
+    throw new Error(`Invalid extended key length: ${full82.length} (expected 82)`);
+  }
+
+  const raw78 = full82.slice(0, 78);
+  const checksum = full82.slice(78, 82);
+
+  // Verify checksum
+  const computedChecksum = doubleSha256(raw78).slice(0, 4);
+  for (let i = 0; i < 4; i++) {
+    if (checksum[i] !== computedChecksum[i]) {
+      throw new Error("Invalid checksum");
+    }
+  }
+
+  const view = new DataView(raw78.buffer, raw78.byteOffset, raw78.byteLength);
+
+  return {
+    version: raw78.slice(0, 4),
+    depth: raw78[4],
+    fingerprint: raw78.slice(5, 9),
+    childIndex: view.getUint32(9, false),
+    chainCode: raw78.slice(13, 45),
+    publicKey: raw78.slice(45, 78),
+    raw78,
+    checksum,
+    full82,
+    encoded: zpubString,
+  };
+}
+
+/* ── Derive address from zpub data (public-key-only) ── */
+
+export async function deriveAddressFromZpub(
+  accountPubKey: Uint8Array,
+  accountChainCode: Uint8Array,
+  isChange: boolean,
+  index: number
+): Promise<DerivedAddress> {
+  // First non-hardened derivation: account → change/receive chain
+  const chainIndex = isChange ? 1 : 0;
+  const chainDerivation = await childDerivePublic(
+    accountPubKey,
+    accountChainCode,
+    chainIndex
+  );
+
+  // Second non-hardened derivation: chain → address index
+  const addressDerivation = await childDerivePublic(
+    chainDerivation.childPubKey,
+    chainDerivation.childChainCode,
+    index
+  );
+
+  const childPubKey = addressDerivation.childPubKey;
+  const h160 = hash160(childPubKey);
+  const address = pubkeyToP2wpkhAddress(childPubKey);
+
+  return {
+    index,
+    path: `m/84'/0'/0'/${chainIndex}/${index}`,
+    childPubKey,
+    hash160: h160,
+    address,
+    isChange,
+    chainDerivation,
+    addressDerivation,
+  };
 }
 
 /* ── Hex helpers ── */

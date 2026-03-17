@@ -7,7 +7,7 @@ export default function ZpubPage() {
     <PageShell>
       <VisualizationShell
         title="Was ist ein zpub (Extended Public Key)?"
-        description="Die 5 Schritte vom Seed zum zpub — dem Schlüssel, der deine Adressen erzeugt"
+        description="Vom Public Key zur Watch-Only Wallet — wie ein zpub Adressen erzeugt, ohne Private Keys zu kennen"
         topic="zpub"
       >
         <ZpubVisualizer />
