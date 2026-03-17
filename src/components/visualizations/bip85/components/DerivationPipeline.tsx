@@ -248,7 +248,7 @@ function IntermediateSteps({ steps }: { steps: IntermediateKey[] }) {
     <div className="mt-3 mb-1">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center gap-2 rounded-lg border border-border-subtle bg-bg-primary px-3 py-2 font-code text-xs text-text-secondary transition-all hover:border-border-active hover:text-text-primary"
+        className="flex w-full items-center gap-2 rounded-lg border border-border-subtle bg-bg-primary px-4 py-2.5 font-code text-sm text-text-secondary transition-all hover:border-border-active hover:text-text-primary"
       >
         <span
           className="inline-block transition-transform duration-200"
@@ -262,13 +262,11 @@ function IntermediateSteps({ steps }: { steps: IntermediateKey[] }) {
       </button>
 
       <div
-        className="overflow-hidden transition-all duration-300"
-        style={{
-          maxHeight: expanded ? `${steps.length * 120 + 40}px` : "0px",
-          opacity: expanded ? 1 : 0,
-        }}
+        className="grid transition-[grid-template-rows] duration-300"
+        style={{ gridTemplateRows: expanded ? "1fr" : "0fr" }}
       >
-        <div className="mt-2 space-y-0 rounded-lg border border-border-subtle bg-bg-primary p-3">
+        <div className="overflow-hidden">
+        <div className="mt-2 space-y-0 rounded-lg border border-border-subtle bg-bg-primary p-4">
           {steps.map((step, i) => {
             const privHex = toHex(step.key.priv);
             const chainHex = toHex(step.key.chain);
@@ -277,30 +275,43 @@ function IntermediateSteps({ steps }: { steps: IntermediateKey[] }) {
             return (
               <div key={i}>
                 <div
-                  className={`rounded-md px-3 py-2.5 ${
+                  className={`rounded-md px-4 py-3.5 ${
                     isLast
                       ? "border border-[#fbbf24]/25 bg-[#fbbf24]/[0.06]"
                       : "bg-transparent"
                   }`}
                 >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="rounded bg-border-subtle px-1.5 py-0.5 font-code text-[10px] text-text-muted">
+                  <div className="flex items-center gap-2.5 mb-2">
+                    <span className="rounded bg-border-subtle px-1.5 py-0.5 font-code text-[11px] text-text-muted">
                       {i + 1}/{steps.length}
                     </span>
-                    <span className="font-code text-xs text-text-primary">
+                    <span className="font-code text-sm text-text-primary">
                       {step.cumulativePath}
                     </span>
-                    <span className="text-[10px] text-text-muted">—</span>
-                    <span className="font-code text-[11px] text-accent-primary">
+                    <span className="text-[11px] text-text-muted">—</span>
+                    <span className="font-code text-xs text-accent-primary">
                       {step.label}
                     </span>
                     {isLast && (
-                      <span className="ml-auto rounded bg-[#fbbf24]/15 px-1.5 py-0.5 font-code text-[10px] text-[#fbbf24]">
+                      <span className="ml-auto rounded bg-[#fbbf24]/15 px-1.5 py-0.5 font-code text-[11px] text-[#fbbf24]">
                         = Derived Key
                       </span>
                     )}
                   </div>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 font-code text-[11px]">
+                  <div className="mt-2 rounded border border-border-subtle bg-bg-secondary/50 px-2.5 py-1.5 font-code text-[11px] leading-relaxed text-text-muted">
+                    <span className="text-[#fb7185]">HMAC-SHA512</span>
+                    <span className="mx-1">←</span>
+                    key: <span className="text-[#94a3b8]">parent chain code</span>
+                    <span className="mx-1">|</span>
+                    data: <span className="text-[#a78bfa]">0x00 ‖ parent priv</span>
+                    {" ‖ "}
+                    <span className="text-[#fbbf24]">{step.segment} (index)</span>
+                    <br />
+                    → left 32B = <span className="text-[#a78bfa]">child key</span> (+ parent mod n)
+                    <span className="mx-1">|</span>
+                    right 32B = <span className="text-[#94a3b8]">child chain code</span>
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-code text-xs">
                     <span className="text-text-muted">
                       priv:{" "}
                       <span className="text-[#a78bfa]">
@@ -316,13 +327,14 @@ function IntermediateSteps({ steps }: { steps: IntermediateKey[] }) {
                   </div>
                 </div>
                 {!isLast && (
-                  <div className="flex justify-center py-0.5 text-sm text-border-active">
+                  <div className="flex justify-center py-1.5 text-sm text-border-active">
                     ↓
                   </div>
                 )}
               </div>
             );
           })}
+        </div>
         </div>
       </div>
     </div>
