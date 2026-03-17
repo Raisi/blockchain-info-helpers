@@ -4,9 +4,6 @@ import { useState, useEffect, useCallback, Fragment } from "react";
 import type {
   MasterKey,
   Bip44Config,
-  Bip85Config,
-  Bip85Result,
-  TreeChild,
 } from "./types";
 import {
   toHex,
@@ -15,8 +12,6 @@ import {
   mnemonicToSeed,
   seedToMaster,
   childDerive,
-  bip85ExtractEntropy,
-  entropyToMnemonic,
 } from "./crypto";
 import {
   DEFAULT_MNEMONIC,
@@ -25,9 +20,7 @@ import {
   STEP_COLORS,
   FLOW_NODES,
   STEP_TO_FLOW,
-  BIP85_APPS,
 } from "./constants";
-import TreeStep from "./components/TreeStep";
 
 /* ── Shared Sub-Components ── */
 
@@ -867,235 +860,13 @@ function Bip44Step({
   );
 }
 
-/* ── Step 6: BIP85 ── */
-function Bip85Step({
-  masterKey,
-  bip85Config,
-  setBip85Config,
-  bip85Result,
-  bip85Loading,
-}: {
-  masterKey: MasterKey | null;
-  bip85Config: Bip85Config;
-  setBip85Config: React.Dispatch<React.SetStateAction<Bip85Config>>;
-  bip85Result: Bip85Result | null;
-  bip85Loading: boolean;
-}) {
-  const { app, wordCount, index, numBytes } = bip85Config;
-  const usedBytes =
-    app === "bip39"
-      ? { 12: 16, 18: 24, 24: 32 }[wordCount]!
-      : app === "wif"
-        ? 32
-        : numBytes;
-
-  return (
-    <div>
-      <ExplainBox
-        icon="🔮"
-        title="Was ist BIP85?"
-        text="Aus einem einzigen Master Seed lassen sich beliebig viele unabhängige Child Seeds ableiten. Jeder Child Seed ist eine eigenständige Wallet."
-        color="#fb7185"
-        steps={[
-          "<strong>Warum BIP85?</strong> Ein sicher aufbewahrter Master-Seed für Dutzende Wallets.",
-          "<strong>Schritt 1 — BIP32 Ableitung:</strong> Hardened Child Keys aus m/83696968'.",
-          '<strong>Schritt 2 — HMAC:</strong> Private Key durch HMAC-SHA512 mit "bip-entropy-from-k".',
-          "<strong>Schritt 3 — Entropie:</strong> Erste N Bytes des Outputs als neue Entropie.",
-          "<strong>Ergebnis:</strong> Mnemonic, WIF-Key, oder Hex-Entropie.",
-        ]}
-      />
-
-      <Label>AUSGABE-FORMAT</Label>
-      <div className="mb-4 flex gap-1.5">
-        {(Object.entries(BIP85_APPS) as [string, (typeof BIP85_APPS)[string]][]).map(
-          ([k, v]) => (
-            <button
-              key={k}
-              className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg border px-3.5 py-2 font-code text-[11px] transition-all ${
-                app === k
-                  ? "border-[#fb7185] bg-[#fb7185]/12 text-[#fb7185]"
-                  : "border-border-subtle bg-bg-primary text-text-secondary hover:border-border-active hover:text-text-primary"
-              }`}
-              onClick={() =>
-                setBip85Config((p) => ({
-                  ...p,
-                  app: k as Bip85Config["app"],
-                }))
-              }
-            >
-              {v.icon} {v.label}
-            </button>
-          )
-        )}
-      </div>
-
-      <div
-        className={`mb-4 grid gap-3 ${app === "bip39" ? "grid-cols-3 max-sm:grid-cols-1" : "grid-cols-2 max-sm:grid-cols-1"}`}
-      >
-        {app === "bip39" && (
-          <>
-            <div>
-              <div className="mb-1.5 text-xs text-text-muted">WORTANZAHL</div>
-              <div className="flex gap-1">
-                {([12, 18, 24] as const).map((n) => (
-                  <button
-                    key={n}
-                    className={`rounded-md border px-3 py-1 font-code text-[11px] transition-all ${
-                      wordCount === n
-                        ? "border-[#fb7185] bg-[#fb7185]/15 text-[#fb7185]"
-                        : "border-border-subtle bg-bg-primary text-text-secondary hover:border-border-active"
-                    }`}
-                    onClick={() =>
-                      setBip85Config((p) => ({ ...p, wordCount: n }))
-                    }
-                  >
-                    {n}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <div className="mb-1.5 text-xs text-text-muted">SPRACHE</div>
-              <div className="flex gap-1">
-                <button className="rounded-md border border-[#fb7185] bg-[#fb7185]/15 px-3 py-1 font-code text-[11px] text-[#fb7185]">
-                  0 — English
-                </button>
-              </div>
-            </div>
-          </>
-        )}
-        {app === "hex" && (
-          <div>
-            <div className="mb-1 text-[9px] text-text-muted">
-              BYTE-ANZAHL (16–64)
-            </div>
-            <input
-              type="number"
-              min={16}
-              max={64}
-              className="w-full rounded-md border border-border-subtle bg-bg-primary p-2 text-center font-code text-base font-bold text-accent-primary outline-none focus:border-accent-secondary"
-              value={numBytes}
-              onChange={(e) =>
-                setBip85Config((p) => ({
-                  ...p,
-                  numBytes: Math.max(
-                    16,
-                    Math.min(64, parseInt(e.target.value) || 32)
-                  ),
-                }))
-              }
-            />
-          </div>
-        )}
-        <div>
-          <div className="mb-1 text-[9px] text-text-muted">CHILD INDEX</div>
-          <input
-            type="number"
-            min={0}
-            max={2147483646}
-            className="w-full rounded-md border border-border-subtle bg-bg-primary p-2 text-center font-code text-base font-bold text-accent-primary outline-none focus:border-accent-secondary"
-            value={index}
-            onChange={(e) =>
-              setBip85Config((p) => ({
-                ...p,
-                index: parseInt(e.target.value) || 0,
-              }))
-            }
-          />
-          <div className="mt-1 text-[9px] text-text-muted">0 bis 2³¹−2</div>
-        </div>
-      </div>
-
-      {/* Results */}
-      {bip85Loading ? (
-        <div className="mt-4 flex items-center gap-2 text-xs text-text-secondary">
-          <Spinner />
-          BIP85 Ableitung läuft...
-        </div>
-      ) : bip85Result ? (
-        <>
-          <Label>HMAC-SHA512 AUSGABE (64 BYTES)</Label>
-          <div className="mb-1.5 text-[10px] text-text-muted">
-            <span className="text-accent-success">●</span> Verwendet ({usedBytes}
-            B) · <span className="text-text-muted">● Verworfen ({64 - usedBytes}B)</span>
-          </div>
-          <div className="flex flex-wrap gap-[3px] rounded-lg border border-border-subtle bg-bg-primary p-2.5 font-code text-[10px]">
-            {Array.from(bip85Result.rawEntropy).map((b, i) => (
-              <span
-                key={i}
-                className={`cursor-default rounded px-1.5 py-0.5 transition-transform hover:scale-[1.2] ${
-                  i < usedBytes
-                    ? "bg-accent-success/20 text-accent-success"
-                    : "bg-text-muted/25 text-text-muted"
-                }`}
-              >
-                {b.toString(16).padStart(2, "0")}
-              </span>
-            ))}
-          </div>
-
-          {app === "bip39" && bip85Result.childMnemonic && (
-            <div className="relative mt-4 overflow-hidden rounded-xl border-2 border-[#fb7185]/30 bg-[#fb7185]/[0.04] p-4">
-              <div className="mb-1 flex items-center gap-2 font-body text-[13px] font-extrabold text-[#fb7185]">
-                🔮 Abgeleitetes Child Mnemonic
-                <span className="rounded-[10px] border border-[#fb7185]/30 bg-[#fb7185]/15 px-2 py-0.5 font-code text-[9px]">
-                  {wordCount} WÖRTER · INDEX {index}
-                </span>
-              </div>
-              <div className="mb-3 text-[10px] text-text-secondary">
-                Vollständiges BIP39 Mnemonic — 100% deterministisch
-              </div>
-              <div className="grid grid-cols-4 gap-1.5 max-sm:grid-cols-2">
-                {bip85Result.childMnemonic.map((w, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-1.5 rounded-md border border-[#fb7185]/20 bg-[#fb7185]/[0.06] px-2 py-1 text-[10px] transition-colors hover:border-[#fb7185]/50"
-                  >
-                    <span className="min-w-4 text-[9px] text-[#fb7185]/50">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="font-bold text-[#fb7185]">{w}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {(app === "wif" || app === "hex") && (
-            <>
-              <Label>EXTRAHIERTE ENTROPIE ({usedBytes} BYTES)</Label>
-              <HexBlock
-                bytes={bip85Result.entropyBytes}
-                colorClass="bg-[#fb7185]/18 text-[#fb7185]"
-              />
-            </>
-          )}
-        </>
-      ) : !masterKey ? (
-        <InfoCard>
-          <strong>Hinweis:</strong> Gib zuerst ein Mnemonic in Schritt 1 ein.
-        </InfoCard>
-      ) : null}
-
-      <InfoCard variant="rose">
-        <strong>BIP85 Sicherheitsgarantie:</strong> Alle Pfad-Level sind
-        hardened → perfekte kryptografische Isolation.
-      </InfoCard>
-    </div>
-  );
-}
-
-/* ── Step 7: Tree — imported from ./components/TreeStep ── */
-
 /* ── Sidebar ── */
 function Sidebar({
   seed,
   masterKey,
-  bip85Result,
 }: {
   seed: Uint8Array | null;
   masterKey: MasterKey | null;
-  bip85Result: Bip85Result | null;
 }) {
   return (
     <div className="flex flex-col gap-3.5 max-lg:hidden">
@@ -1177,38 +948,6 @@ function Sidebar({
         </div>
       )}
 
-      {/* BIP85 Output */}
-      {bip85Result && (
-        <div className="overflow-hidden rounded-xl border border-border-subtle bg-bg-card">
-          <div className="flex items-center gap-2.5 border-b border-[#fb7185]/30 bg-white/[0.015] px-4 py-3.5">
-            <div className="h-3 w-3 rounded-full bg-[#fb7185]" />
-            <div className="font-body text-[15px] font-bold">🔮 BIP85</div>
-            <span className="ml-auto rounded-[10px] border border-[#fb7185]/30 bg-[#fb7185]/10 px-2 py-0.5 font-code text-[10px] font-bold text-[#fb7185]">
-              AKTIV
-            </span>
-          </div>
-          <div className="p-4">
-            <div className="mb-2 font-code text-[11px] tracking-wider text-text-muted">
-              ENTROPIE (HEX)
-            </div>
-            <div className="break-all rounded-lg border border-border-subtle bg-bg-primary p-2.5 font-code text-[11px] leading-8 text-[#fb7185]">
-              {toHex(bip85Result.entropyBytes)}
-            </div>
-            {bip85Result.childMnemonic && (
-              <>
-                <div className="my-2 h-px bg-border-subtle" />
-                <div className="mb-1.5 font-code text-[11px] tracking-wider text-text-muted">
-                  CHILD MNEMONIC ({bip85Result.childMnemonic.length} WÖRTER)
-                </div>
-                <div className="rounded-lg border border-[#fb7185]/20 bg-bg-primary p-2.5 font-code text-xs leading-8 text-[#fb7185]">
-                  {bip85Result.childMnemonic.join(" ")}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* BIP Reference */}
       <div className="overflow-hidden rounded-xl border border-border-subtle bg-bg-card">
         <div className="flex items-center gap-2.5 border-b border-border-subtle bg-white/[0.015] px-4 py-3.5">
@@ -1262,45 +1001,6 @@ export default function BipPipelineVisualizer() {
     index: 0,
   });
 
-  // BIP85
-  const [bip85Config, setBip85Config] = useState<Bip85Config>({
-    app: "bip39",
-    wordCount: 12,
-    lang: 0,
-    index: 0,
-    numBytes: 32,
-  });
-  const [bip85Result, setBip85Result] = useState<Bip85Result | null>(null);
-  const [bip85Loading, setBip85Loading] = useState(false);
-  const [wordlist, setWordlist] = useState<string[]>([]);
-
-  // Tree
-  const [treeData, setTreeData] = useState<(TreeChild | null)[]>([]);
-  const [treeLoading, setTreeLoading] = useState(false);
-
-  // Load BIP39 wordlist
-  useEffect(() => {
-    const urls = [
-      "https://cdn.jsdelivr.net/npm/bip39@3.1.0/src/wordlists/english.json",
-      "https://unpkg.com/bip39@3.1.0/src/wordlists/english.json",
-    ];
-    const tryLoad = async () => {
-      for (const url of urls) {
-        try {
-          const r = await fetch(url);
-          const data = await r.json();
-          if (Array.isArray(data) && data.length === 2048) {
-            setWordlist(data);
-            return;
-          }
-        } catch {
-          // try next
-        }
-      }
-    };
-    tryLoad();
-  }, []);
-
   // BIP32 derive
   const derive = useCallback(async () => {
     if (
@@ -1341,130 +1041,6 @@ export default function BipPipelineVisualizer() {
     derive();
   }, [derive]);
 
-  // BIP85 derive
-  const deriveBip85 = useCallback(async () => {
-    if (!masterKey) return;
-    setBip85Loading(true);
-    setBip85Result(null);
-    try {
-      const { app, wordCount, lang, index, numBytes } = bip85Config;
-      const path: [number, boolean][] =
-        app === "bip39"
-          ? [
-              [83696968, true],
-              [39, true],
-              [lang, true],
-              [wordCount, true],
-              [index, true],
-            ]
-          : app === "wif"
-            ? [
-                [83696968, true],
-                [2, true],
-                [0, true],
-                [index, true],
-              ]
-            : [
-                [83696968, true],
-                [128169, true],
-                [numBytes, true],
-                [index, true],
-              ];
-
-      let cur: MasterKey = { priv: masterKey.priv, chain: masterKey.chain };
-      for (const [idx, hard] of path)
-        cur = await childDerive(cur.priv, cur.chain, idx, hard);
-
-      const rawEntropy = await bip85ExtractEntropy(cur.priv);
-      const byteCount =
-        app === "bip39"
-          ? ({ 12: 16, 18: 24, 24: 32 }[wordCount] ?? 16)
-          : app === "wif"
-            ? 32
-            : numBytes;
-      const entropyBytes = rawEntropy.slice(0, byteCount);
-
-      let childMnemonic: string[] | null = null;
-      if (app === "bip39" && wordlist.length === 2048) {
-        childMnemonic = await entropyToMnemonic(entropyBytes, wordlist);
-      }
-
-      setBip85Result({ rawEntropy, entropyBytes, childMnemonic, derivedKey: cur });
-    } catch (e) {
-      console.error("BIP85:", e);
-    }
-    setBip85Loading(false);
-  }, [masterKey, bip85Config, wordlist]);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (masterKey) deriveBip85();
-  }, [deriveBip85, masterKey]);
-
-  // Tree: pre-compute 4 BIP85 children
-  useEffect(() => {
-    if (!masterKey || wordlist.length !== 2048) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setTreeData([]);
-    setTreeLoading(true);
-    const run = async () => {
-      const results: (TreeChild | null)[] = [];
-      for (let idx = 0; idx < 4; idx++) {
-        try {
-          const path: [number, boolean][] = [
-            [83696968, true],
-            [39, true],
-            [0, true],
-            [12, true],
-            [idx, true],
-          ];
-          let cur: MasterKey = { priv: masterKey.priv, chain: masterKey.chain };
-          for (const [i, h] of path)
-            cur = await childDerive(cur.priv, cur.chain, i, h);
-
-          const rawEnt = await bip85ExtractEntropy(cur.priv);
-          const entBytes = rawEnt.slice(0, 16);
-          const childMnemonicWords = await entropyToMnemonic(
-            entBytes,
-            wordlist
-          );
-          const childSeedBytes = await mnemonicToSeed(
-            childMnemonicWords.join(" "),
-            ""
-          );
-          const childMaster = await seedToMaster(childSeedBytes);
-
-          let bip44cur: MasterKey = {
-            priv: childMaster.priv,
-            chain: childMaster.chain,
-          };
-          for (const [i, h] of [
-            [44, true],
-            [0, true],
-            [0, true],
-            [0, false],
-            [0, false],
-          ] as [number, boolean][]) {
-            bip44cur = await childDerive(bip44cur.priv, bip44cur.chain, i, h);
-          }
-          results.push({
-            childEntropy: entBytes,
-            childMnemonic: childMnemonicWords,
-            childSeed: childSeedBytes,
-            childMaster,
-            finalKey: bip44cur,
-          });
-        } catch (e) {
-          console.error(`Tree child ${idx}:`, e);
-          results.push(null);
-        }
-        setTreeData([...results]);
-      }
-      setTreeLoading(false);
-    };
-    run();
-  }, [masterKey, wordlist]);
-
   return (
     <div className="relative">
       {/* Step Nav */}
@@ -1474,11 +1050,7 @@ export default function BipPipelineVisualizer() {
             <button
               className={`flex flex-shrink-0 items-center gap-2.5 whitespace-nowrap rounded-xl border px-5 py-3.5 font-code text-sm transition-all ${
                 step === s.id
-                  ? s.id === 6
-                    ? "border-[#fb7185] bg-[#fb7185]/15 text-white"
-                    : s.id === 7
-                      ? "border-[#38bdf8] bg-[#38bdf8]/10 text-white"
-                      : "border-accent-secondary bg-accent-secondary/15 text-white"
+                  ? "border-accent-secondary bg-accent-secondary/15 text-white"
                   : seed && i > 0 && i < 6
                     ? "border-accent-success/30 bg-bg-card text-text-secondary"
                     : "border-border-subtle bg-bg-card text-text-secondary hover:border-border-active hover:text-text-primary"
@@ -1488,11 +1060,7 @@ export default function BipPipelineVisualizer() {
               <div
                 className={`grid h-7 w-7 place-items-center rounded-full text-xs font-bold ${
                   step === s.id
-                    ? s.id === 6
-                      ? "bg-[#e11d48] text-white"
-                      : s.id === 7
-                        ? "bg-[#38bdf8] text-black"
-                        : "bg-accent-secondary text-white"
+                    ? "bg-accent-secondary text-white"
                     : seed && i > 0 && i < 6
                       ? "bg-[#00cc6a] text-black"
                       : "bg-border-active"
@@ -1530,7 +1098,7 @@ export default function BipPipelineVisualizer() {
               {STEPS[step].icon} {STEPS[step].label}
             </div>
             <div className="ml-auto flex items-center gap-2">
-              {(loading || bip85Loading) && <Spinner />}
+              {loading && <Spinner />}
               <div className="flex gap-1.5">
                 {step > 0 && (
                   <button
@@ -1587,26 +1155,9 @@ export default function BipPipelineVisualizer() {
                 setBip44={setBip44}
               />
             )}
-            {step === 6 && (
-              <Bip85Step
-                masterKey={masterKey}
-                bip85Config={bip85Config}
-                setBip85Config={setBip85Config}
-                bip85Result={bip85Result}
-                bip85Loading={bip85Loading}
-              />
-            )}
-            {step === 7 && (
-              <TreeStep
-                masterKey={masterKey}
-                seed={seed}
-                treeData={treeData}
-                treeLoading={treeLoading}
-              />
-            )}
           </div>
         </div>
-        <Sidebar seed={seed} masterKey={masterKey} bip85Result={bip85Result} />
+        <Sidebar seed={seed} masterKey={masterKey} />
       </div>
 
       {/* Footer */}

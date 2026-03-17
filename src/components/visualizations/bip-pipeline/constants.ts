@@ -17,8 +17,6 @@ export const STEPS: StepDef[] = [
   { id: 3, label: "Master", icon: "🌱" },
   { id: 4, label: "Child", icon: "🌳" },
   { id: 5, label: "BIP44", icon: "📍" },
-  { id: 6, label: "BIP85", icon: "🔮" },
-  { id: 7, label: "Baum", icon: "🕸️" },
 ];
 
 export const STEP_COLORS = [
@@ -28,8 +26,6 @@ export const STEP_COLORS = [
   "var(--accent-primary)",
   "var(--accent-secondary)",
   "var(--accent-danger)",
-  "#fb7185",
-  "#38bdf8",
 ];
 
 export const FLOW_NODES: FlowNodeDef[] = [
@@ -42,8 +38,6 @@ export const FLOW_NODES: FlowNodeDef[] = [
   { icon: "🌳", label: "BIP32", color: "var(--accent-secondary)" },
   { icon: "📍", label: "BIP44", color: "var(--accent-danger)" },
   { icon: "💎", label: "Key", color: "var(--accent-success)" },
-  { icon: "🔮", label: "BIP85", color: "#fb7185" },
-  { icon: "🌱", label: "Child Seed", color: "#fb7185" },
 ];
 
 export const STEP_TO_FLOW: Record<number, number> = {
@@ -53,8 +47,6 @@ export const STEP_TO_FLOW: Record<number, number> = {
   3: 5,
   4: 6,
   5: 7,
-  6: 9,
-  7: 10,
 };
 
 export const BIP85_APPS: Record<
