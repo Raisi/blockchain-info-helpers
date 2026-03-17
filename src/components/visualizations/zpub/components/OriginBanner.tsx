@@ -6,7 +6,7 @@ export function OriginBanner() {
   return (
     <div className="mb-6 rounded-xl border border-border-subtle bg-bg-card p-4">
       <div className="mb-2 font-code text-[10px] font-bold uppercase tracking-[2px] text-text-muted">
-        DERIVATIONSPFAD
+        Derivationspfad
       </div>
       <div className="mb-3 flex flex-wrap items-center gap-2 font-code text-lg">
         <span className="text-text-secondary">m</span>

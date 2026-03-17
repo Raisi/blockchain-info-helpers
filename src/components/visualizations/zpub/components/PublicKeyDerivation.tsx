@@ -16,8 +16,8 @@ export function PublicKeyDerivation({
   return (
     <div>
       <div data-zpub-animate>
-        <div className="mb-3 font-code text-[13px] font-bold uppercase tracking-[2px] text-text-muted">
-          INPUT — ACCOUNT PRIVATE KEY (32 BYTES)
+        <div className="mb-3 mt-7 font-code text-[13px] font-bold uppercase tracking-[2px] text-text-muted">
+          Input — Account Private Key (32 Bytes)
         </div>
         <HexDisplay
           bytes={accountPrivKey}
@@ -33,7 +33,7 @@ export function PublicKeyDerivation({
         </div>
         <div className="rounded-xl border border-accent-primary/30 bg-accent-primary/[0.06] p-5">
           <div className="mb-2 font-code text-[10px] font-bold uppercase tracking-[2px] text-accent-primary">
-            OPERATION — EC-MULTIPLIKATION (SECP256K1)
+            Operation — EC-Multiplikation (secp256k1)
           </div>
           <div className="flex items-center justify-center gap-3 py-3 font-code text-xl">
             <span className="text-[#34d399]">P</span>
@@ -66,7 +66,7 @@ export function PublicKeyDerivation({
 
       <div data-zpub-animate>
         <div className="mb-3 mt-7 font-code text-[13px] font-bold uppercase tracking-[2px] text-text-muted">
-          OUTPUT — COMPRESSED PUBLIC KEY (33 BYTES)
+          Output — Compressed Public Key (33 Bytes)
         </div>
         <HexDisplay
           bytes={accountPubKey}

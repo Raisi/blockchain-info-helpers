@@ -108,7 +108,7 @@ export default function ZpubVisualizer() {
             </div>
 
             <div data-zpub-animate>
-              <Label>MNEMONIC EINGABE</Label>
+              <Label>Mnemonic Eingabe</Label>
               <textarea
                 className="w-full resize-y rounded-xl border border-border-subtle bg-bg-primary p-4 font-code text-sm leading-[1.7] text-text-primary outline-none transition-colors focus:border-accent-secondary"
                 rows={3}
@@ -119,7 +119,7 @@ export default function ZpubVisualizer() {
             </div>
 
             <div data-zpub-animate>
-              <Label>OPTIONALE PASSPHRASE</Label>
+              <Label>Optionale Passphrase</Label>
               <input
                 className="w-full rounded-xl border border-border-subtle bg-bg-primary p-4 font-code text-sm text-text-primary outline-none transition-colors focus:border-accent-secondary"
                 value={passphrase}
@@ -163,12 +163,12 @@ export default function ZpubVisualizer() {
             {serialized && (
               <>
                 <div data-zpub-animate>
-                  <Label>78-BYTE STRUKTUR (GENERIERT)</Label>
+                  <Label>78-Byte Struktur (generiert)</Label>
                   <ByteFieldDisplay serialized={serialized} />
                 </div>
 
                 <div data-zpub-animate>
-                  <Label>DERIVATION PATH</Label>
+                  <Label>Derivation Path</Label>
                   <div className="rounded-xl border border-accent-secondary/25 bg-accent-secondary/[0.06] p-5">
                     <pre className="font-code text-sm leading-[2] text-text-primary">
 {`m / 84' / 0' / 0'
@@ -193,7 +193,7 @@ export default function ZpubVisualizer() {
                 </div>
 
                 <div data-zpub-animate>
-                  <Label>BASE58CHECK ENCODING</Label>
+                  <Label>Base58Check Encoding</Label>
                   <div className="rounded-xl border border-[#fb7185]/30 bg-[#fb7185]/5 p-5">
                     <div className="mb-2 font-code text-[10px] tracking-wider text-text-muted">
                       ZPUB (BASE58CHECK)
@@ -214,7 +214,7 @@ export default function ZpubVisualizer() {
             )}
 
             <div data-zpub-animate>
-              <Label>EIGENEN ZPUB DECODIEREN</Label>
+              <Label>Eigenen zpub decodieren</Label>
               <ZpubDecoder onDecoded={() => {}} />
             </div>
 
