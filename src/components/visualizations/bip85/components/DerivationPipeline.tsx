@@ -13,6 +13,13 @@ import {
 import type { MasterKey } from "@/components/visualizations/bip-pipeline/types";
 import { BIP85_APPS } from "../constants";
 
+interface IntermediateKey {
+  key: MasterKey;
+  segment: number;
+  label: string;
+  cumulativePath: string;
+}
+
 interface DerivationState {
   masterKey: MasterKey | null;
   derivedKey: MasterKey | null;
@@ -20,6 +27,7 @@ interface DerivationState {
   entropyBytes: Uint8Array | null;
   childMnemonic: string[] | null;
   path: string;
+  intermediateKeys: IntermediateKey[];
 }
 
 interface DerivationPipelineProps {
@@ -209,6 +217,118 @@ function PathBreakdown({
   );
 }
 
+function buildSegmentLabels(
+  app: "bip39" | "wif" | "hex",
+  wordCount: 12 | 18 | 24,
+  childIndex: number,
+  segments: number[],
+): string[] {
+  if (app === "bip39") {
+    return [
+      "BIP-85 Purpose",
+      "BIP-39",
+      "Language: English",
+      `Word Count: ${wordCount}`,
+      `Child Index: ${childIndex}`,
+    ].slice(0, segments.length);
+  }
+  return [
+    "BIP-85 Purpose",
+    app === "wif" ? "WIF" : "HEX",
+    `Child Index: ${childIndex}`,
+  ].slice(0, segments.length);
+}
+
+function IntermediateSteps({ steps }: { steps: IntermediateKey[] }) {
+  const [expanded, setExpanded] = useState(false);
+
+  if (steps.length === 0) return null;
+
+  return (
+    <div className="mt-3 mb-1">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="flex w-full items-center gap-2 rounded-lg border border-border-subtle bg-bg-primary px-3 py-2 font-code text-xs text-text-secondary transition-all hover:border-border-active hover:text-text-primary"
+      >
+        <span
+          className="inline-block transition-transform duration-200"
+          style={{ transform: expanded ? "rotate(90deg)" : "rotate(0deg)" }}
+        >
+          ▶
+        </span>
+        <span>
+          Zwischenschritte der Ableitung anzeigen ({steps.length})
+        </span>
+      </button>
+
+      <div
+        className="overflow-hidden transition-all duration-300"
+        style={{
+          maxHeight: expanded ? `${steps.length * 120 + 40}px` : "0px",
+          opacity: expanded ? 1 : 0,
+        }}
+      >
+        <div className="mt-2 space-y-0 rounded-lg border border-border-subtle bg-bg-primary p-3">
+          {steps.map((step, i) => {
+            const privHex = toHex(step.key.priv);
+            const chainHex = toHex(step.key.chain);
+            const isLast = i === steps.length - 1;
+
+            return (
+              <div key={i}>
+                <div
+                  className={`rounded-md px-3 py-2.5 ${
+                    isLast
+                      ? "border border-[#fbbf24]/25 bg-[#fbbf24]/[0.06]"
+                      : "bg-transparent"
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="rounded bg-border-subtle px-1.5 py-0.5 font-code text-[10px] text-text-muted">
+                      {i + 1}/{steps.length}
+                    </span>
+                    <span className="font-code text-xs text-text-primary">
+                      {step.cumulativePath}
+                    </span>
+                    <span className="text-[10px] text-text-muted">—</span>
+                    <span className="font-code text-[11px] text-accent-primary">
+                      {step.label}
+                    </span>
+                    {isLast && (
+                      <span className="ml-auto rounded bg-[#fbbf24]/15 px-1.5 py-0.5 font-code text-[10px] text-[#fbbf24]">
+                        = Derived Key
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 font-code text-[11px]">
+                    <span className="text-text-muted">
+                      priv:{" "}
+                      <span className="text-[#a78bfa]">
+                        {privHex.slice(0, 32)}…
+                      </span>
+                    </span>
+                    <span className="text-text-muted">
+                      chain:{" "}
+                      <span className="text-[#94a3b8]">
+                        {chainHex.slice(0, 16)}…
+                      </span>
+                    </span>
+                  </div>
+                </div>
+                {!isLast && (
+                  <div className="flex justify-center py-0.5 text-sm text-border-active">
+                    ↓
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Main Component ─── */
 
 export default function DerivationPipeline({
@@ -227,6 +347,7 @@ export default function DerivationPipeline({
     entropyBytes: null,
     childMnemonic: null,
     path: "",
+    intermediateKeys: [],
   });
 
   const derive = useCallback(async () => {
@@ -249,10 +370,21 @@ export default function DerivationPipeline({
 
       const path = `m/${pathSegments.map((s) => `${s}'`).join("/")}`;
 
-      // Step 3: Derive through the path
+      // Step 3: Derive through the path, collecting intermediate keys
+      const segmentLabels = buildSegmentLabels(app, wordCount, childIndex, pathSegments);
       let current = master;
-      for (const seg of pathSegments) {
+      const intermediateKeys: IntermediateKey[] = [];
+      let cumPath = "m";
+      for (let i = 0; i < pathSegments.length; i++) {
+        const seg = pathSegments[i];
         current = await childDerive(current.priv, current.chain, seg, true);
+        cumPath += `/${seg}'`;
+        intermediateKeys.push({
+          key: { priv: current.priv, chain: current.chain },
+          segment: seg,
+          label: segmentLabels[i],
+          cumulativePath: cumPath,
+        });
       }
 
       // Step 4: HMAC-SHA512 with "bip-entropy-from-k"
@@ -275,6 +407,7 @@ export default function DerivationPipeline({
         entropyBytes,
         childMnemonic,
         path,
+        intermediateKeys,
       });
     } catch (e) {
       console.error("BIP-85 derivation error:", e);
@@ -416,6 +549,7 @@ export default function DerivationPipeline({
 
             <PipelineArrow label="BIP-32 Hardened Derivation" detail={state.path}>
               <PathBreakdown app={app} wordCount={wordCount} childIndex={childIndex} />
+              <IntermediateSteps steps={state.intermediateKeys} />
             </PipelineArrow>
 
             {/* Stage 2: Derived Key */}
