@@ -11,7 +11,7 @@ import {
   splitHex,
 } from "@/components/visualizations/bip-pipeline/crypto";
 import type { MasterKey } from "@/components/visualizations/bip-pipeline/types";
-import {  BIP85_APPS } from "../constants";
+import { BIP85_APPS } from "../constants";
 
 interface DerivationState {
   masterKey: MasterKey | null;
@@ -26,6 +26,53 @@ interface DerivationPipelineProps {
   mnemonic: string;
   onMnemonicChange: (m: string) => void;
   wordlist: string[];
+}
+
+/* ─── Local Sub-Components ─── */
+
+function StageGroup({
+  color,
+  label,
+  stageNumber,
+  children,
+}: {
+  color: string;
+  label: string;
+  stageNumber: number;
+  children: React.ReactNode;
+}) {
+  const stageColors: Record<number, string> = {
+    1: "text-[#a78bfa]",
+    2: "text-[#fbbf24]",
+    3: "text-[#fb7185]",
+    4: "text-[#6ee7b7]",
+  };
+
+  return (
+    <div
+      className="relative rounded-lg p-4"
+      style={{
+        borderLeft: `3px solid ${color}`,
+        backgroundColor: `color-mix(in srgb, ${color} 3%, transparent)`,
+      }}
+    >
+      <div
+        className="mb-3 inline-block rounded px-2 py-0.5 font-code text-[11px] font-bold uppercase tracking-wider"
+        style={{
+          color,
+          backgroundColor: `color-mix(in srgb, ${color} 12%, transparent)`,
+          border: `1px solid color-mix(in srgb, ${color} 20%, transparent)`,
+        }}
+      >
+        <span className={stageColors[stageNumber] ?? "text-text-muted"}>
+          {stageNumber}
+        </span>
+        <span className="mx-1 text-text-muted">·</span>
+        {label}
+      </div>
+      {children}
+    </div>
+  );
 }
 
 function HexBlock({
@@ -56,16 +103,113 @@ function HexBlock({
   );
 }
 
-function PipelineArrow({ label }: { label: string }) {
+function PipelineArrow({
+  label,
+  detail,
+  children,
+}: {
+  label: string;
+  detail?: string;
+  children?: React.ReactNode;
+}) {
   return (
-    <div className="flex flex-col items-center gap-1 py-2">
-      <div className="font-code text-[10px] font-bold uppercase tracking-widest text-[#fb7185]">
-        {label}
+    <div className="py-5">
+      <div className="border-t border-border-subtle" />
+      <div className="flex flex-col items-center gap-2 py-3">
+        <div className="font-code text-xs font-bold uppercase tracking-widest text-[#fb7185]">
+          {label}
+        </div>
+        {detail && (
+          <div className="rounded-md bg-bg-primary px-3 py-1.5 font-code text-sm text-text-secondary">
+            {detail}
+          </div>
+        )}
+        {children}
+        <div className="text-2xl text-[#fb7185]">⬇</div>
       </div>
-      <div className="text-xl text-text-muted">↓</div>
+      <div className="border-t border-border-subtle" />
     </div>
   );
 }
+
+function StageInfo({ text, color }: { text: string; color: string }) {
+  return (
+    <div
+      className="mt-3 mb-1 flex items-start gap-2 rounded-r-md border-l-2 py-1.5 pl-3 font-body text-[13px] leading-relaxed text-text-secondary"
+      style={{ borderColor: color }}
+    >
+      <span
+        className="mt-[7px] block h-[6px] w-[6px] flex-shrink-0 rounded-full"
+        style={{ backgroundColor: color }}
+      />
+      <span>{text}</span>
+    </div>
+  );
+}
+
+interface PathSegment {
+  value: string;
+  label: string;
+  colorClass: string;
+}
+
+function PathBreakdown({
+  app,
+  wordCount,
+  childIndex,
+}: {
+  app: "bip39" | "wif" | "hex";
+  wordCount: 12 | 18 | 24;
+  childIndex: number;
+}) {
+  const purposeMap = { bip39: 39, wif: 2, hex: 128169 };
+  const segments: PathSegment[] = [
+    { value: "m", label: "Root", colorClass: "border-text-muted text-text-muted" },
+    { value: "83696968'", label: "BIP-85", colorClass: "border-[#fb7185] text-[#fb7185]" },
+    {
+      value: `${purposeMap[app]}'`,
+      label: app === "bip39" ? "BIP-39" : app === "wif" ? "WIF" : "HEX",
+      colorClass: "border-accent-primary text-accent-primary",
+    },
+  ];
+
+  if (app === "bip39") {
+    segments.push(
+      { value: "0'", label: "English", colorClass: "border-accent-primary text-accent-primary" },
+      {
+        value: `${wordCount}'`,
+        label: `${wordCount} Words`,
+        colorClass: "border-accent-primary text-accent-primary",
+      },
+    );
+  }
+
+  segments.push({
+    value: `${childIndex}'`,
+    label: "Index",
+    colorClass: "border-[#fbbf24] text-[#fbbf24]",
+  });
+
+  return (
+    <div className="mt-3 mb-1 flex flex-wrap items-center gap-2">
+      {segments.map((seg, i) => (
+        <div key={i} className="flex items-center gap-2">
+          <span
+            className={`flex flex-col items-center rounded border px-3 py-1.5 font-code text-xs leading-tight ${seg.colorClass} bg-bg-primary`}
+          >
+            <span className="font-bold">{seg.value}</span>
+            <span className="mt-0.5 text-[10px] text-text-muted">{seg.label}</span>
+          </span>
+          {i < segments.length - 1 && (
+            <span className="text-sm text-text-muted">→</span>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ─── Main Component ─── */
 
 export default function DerivationPipeline({
   mnemonic,
@@ -151,13 +295,16 @@ export default function DerivationPipeline({
           <span className="text-3xl flex-shrink-0">⚙️</span>
           <div>
             <div className="mb-2 font-code text-[15px] font-bold text-[#fb7185]">
-              3-Stufen Ableitung
+              3-Stufen Ableitung: BIP-32 → HMAC → Encoding
             </div>
             <div className="font-body text-sm leading-[1.8] text-text-secondary">
-              BIP-85 nutzt den bestehenden BIP-32 Derivation-Mechanismus mit einem speziellen
-              Pfad (<strong className="text-[#fb7185]">m/83696968&apos;/...</strong>), gefolgt von einem
-              HMAC-SHA512 Schritt, der die Entropy extrahiert. Das Ergebnis ist ein vollständig
-              unabhängiger Seed.
+              <strong className="text-text-primary">Stufe 1 — BIP-32 Derivation:</strong> Vom Master Private Key wird über einen
+              speziellen Pfad (<strong className="text-[#fb7185]">m/83696968&apos;/...</strong>) ein Child Key abgeleitet.{" "}
+              <strong className="text-text-primary">Stufe 2 — HMAC-SHA512:</strong> Der Child Key wird mit dem festen
+              Schlüssel <code className="rounded bg-bg-primary px-1.5 py-0.5 text-[#fb7185]">&quot;bip-entropy-from-k&quot;</code> gehasht
+              — das erzeugt 64 Bytes frische, unabhängige Entropy.{" "}
+              <strong className="text-text-primary">Stufe 3 — Truncation + Encoding:</strong> Die ersten N Bytes werden
+              entnommen und ins Zielformat (Mnemonic, WIF, HEX) konvertiert.
             </div>
           </div>
         </div>
@@ -253,87 +400,130 @@ export default function DerivationPipeline({
       {/* Pipeline Visualization */}
       {state.masterKey && state.derivedKey && state.rawEntropy && state.entropyBytes && (
         <div data-bip85-animate>
-          <div className="rounded-xl border border-border-subtle bg-bg-card p-5">
+          <div className="space-y-0 rounded-xl border border-border-subtle bg-bg-card p-5">
             {/* Stage 1: Master Key */}
-            <HexBlock
-              label="1 · Master Private Key"
-              hex={toHex(state.masterKey.priv)}
-              colorClass="bg-accent-secondary/12 text-[#a78bfa]"
-            />
+            <StageGroup color="#a78bfa" label="Master Key" stageNumber={1}>
+              <HexBlock
+                label="Master Private Key"
+                hex={toHex(state.masterKey.priv)}
+                colorClass="bg-accent-secondary/12 text-[#a78bfa]"
+              />
+              <StageInfo
+                color="#a78bfa"
+                text="Der Root Private Key, abgeleitet aus deiner Mnemonic via PBKDF2 (2048 Runden). Startpunkt für ALLE Ableitungen in BIP-32/44/85 — deine gesamte Wallet-Hierarchie geht von diesem einen Schlüssel aus."
+              />
+            </StageGroup>
 
-            <PipelineArrow label={`BIP-32 Hardened Path: ${state.path}`} />
+            <PipelineArrow label="BIP-32 Hardened Derivation" detail={state.path}>
+              <PathBreakdown app={app} wordCount={wordCount} childIndex={childIndex} />
+            </PipelineArrow>
 
             {/* Stage 2: Derived Key */}
-            <HexBlock
-              label="2 · Derived Private Key (am Pfad-Ende)"
-              hex={toHex(state.derivedKey.priv)}
-              colorClass="bg-accent-warning/12 text-[#fbbf24]"
-            />
+            <StageGroup color="#fbbf24" label="Derived Key" stageNumber={2}>
+              <HexBlock
+                label="Derived Private Key (am Pfad-Ende)"
+                hex={toHex(state.derivedKey.priv)}
+                colorClass="bg-accent-warning/12 text-[#fbbf24]"
+              />
+              <StageInfo
+                color="#fbbf24"
+                text="Der Private Key am Ende des BIP-32 Pfades. Bis hier: Standard BIP-32. Der nächste Schritt ist was BIP-85 besonders macht."
+              />
+            </StageGroup>
 
-            <PipelineArrow label='HMAC-SHA512("bip-entropy-from-k")' />
+            <PipelineArrow label='HMAC-SHA512' detail='"bip-entropy-from-k"'>
+              <StageInfo
+                color="#fb7185"
+                text='Der Derived Key wird in HMAC-SHA512 mit dem festen String "bip-entropy-from-k" als Schlüssel eingespeist. Das verwandelt einen BIP-32 Private Key in frische, unabhängige Entropy — die Kerninnovation von BIP-85.'
+              />
+            </PipelineArrow>
 
             {/* Stage 3: Raw Entropy with used/discarded coloring */}
-            {(() => {
-              const usedBytes = state.entropyBytes.length;
-              const rawHex = toHex(state.rawEntropy);
-              const chunks = splitHex(rawHex, 8);
-              const usedChunks = Math.ceil((usedBytes * 2) / 8);
-              return (
-                <div>
-                  <div className="mb-2 font-code text-[11px] font-bold uppercase tracking-[2px] text-text-muted">
-                    3 · Raw Entropy (64 Bytes) — {usedBytes}B verwendet · {64 - usedBytes}B verworfen
+            <StageGroup color="#fb7185" label="HMAC Entropy" stageNumber={3}>
+              {(() => {
+                const usedBytes = state.entropyBytes.length;
+                const rawHex = toHex(state.rawEntropy);
+                const chunks = splitHex(rawHex, 8);
+                const usedChunks = Math.ceil((usedBytes * 2) / 8);
+                return (
+                  <div>
+                    <div className="mb-2 font-code text-[11px] font-bold uppercase tracking-[2px] text-text-muted">
+                      Raw Entropy (64 Bytes) — {usedBytes}B verwendet · {64 - usedBytes}B verworfen
+                    </div>
+                    <div className="break-all rounded-xl border border-border-subtle bg-bg-primary p-3 font-code text-sm leading-8">
+                      {chunks.map((c, i) => (
+                        <span
+                          key={i}
+                          className={`mr-1.5 mb-1 inline-block rounded px-2 py-1 transition-all hover:brightness-[1.4] ${
+                            i < usedChunks
+                              ? "bg-[#fb7185]/12 text-[#fb7185]"
+                              : "bg-border-subtle/50 text-text-muted line-through"
+                          }`}
+                        >
+                          {c}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                  <div className="break-all rounded-xl border border-border-subtle bg-bg-primary p-3 font-code text-sm leading-8">
-                    {chunks.map((c, i) => (
-                      <span
-                        key={i}
-                        className={`mr-1.5 mb-1 inline-block rounded px-2 py-1 transition-all hover:brightness-[1.4] ${
-                          i < usedChunks
-                            ? "bg-[#fb7185]/12 text-[#fb7185]"
-                            : "bg-border-subtle/50 text-text-muted line-through"
-                        }`}
-                      >
-                        {c}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              );
-            })()}
+                );
+              })()}
+              <StageInfo
+                color="#fb7185"
+                text={`64 Bytes HMAC-Output. ${
+                  app === "bip39"
+                    ? `Für ${wordCount} Wörter → ${wordCount === 12 ? 16 : wordCount === 18 ? 24 : 32} Bytes (${wordCount === 12 ? 128 : wordCount === 18 ? 192 : 256} Bit) verwendet, der Rest wird kryptografisch sicher verworfen.`
+                    : "32 Bytes werden verwendet, der Rest wird kryptografisch sicher verworfen."
+                }`}
+              />
+            </StageGroup>
 
             {/* Output */}
             {app === "bip39" && state.childMnemonic && (
               <>
                 <PipelineArrow label="BIP-39 Encoding" />
-                <div>
-                  <div className="mb-2 font-code text-[11px] font-bold uppercase tracking-[2px] text-text-muted">
-                    5 · Child Mnemonic ({state.childMnemonic.length} Wörter)
-                  </div>
-                  <div className="flex flex-wrap gap-2 rounded-xl border border-border-subtle bg-bg-primary p-4">
-                    {state.childMnemonic.map((word, i) => (
-                      <span
-                        key={i}
-                        className="rounded-lg bg-[#fb7185]/12 px-3 py-1.5 font-code text-sm text-[#fb7185]"
-                      >
-                        <span className="mr-1.5 text-[10px] text-text-muted">
-                          {i + 1}
+
+                <StageGroup color="#6ee7b7" label="Output" stageNumber={4}>
+                  <div>
+                    <div className="mb-2 font-code text-[11px] font-bold uppercase tracking-[2px] text-text-muted">
+                      Child Mnemonic ({state.childMnemonic.length} Wörter)
+                    </div>
+                    <div className="flex flex-wrap gap-2 rounded-xl border border-border-subtle bg-bg-primary p-4">
+                      {state.childMnemonic.map((word, i) => (
+                        <span
+                          key={i}
+                          className="rounded-lg bg-[#fb7185]/12 px-3 py-1.5 font-code text-sm text-[#fb7185]"
+                        >
+                          <span className="mr-1.5 text-[10px] text-text-muted">
+                            {i + 1}
+                          </span>
+                          {word}
                         </span>
-                        {word}
-                      </span>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
+                  <StageInfo
+                    color="#6ee7b7"
+                    text="Die gekürzte Entropy bekommt eine SHA-256 Checksumme und wird auf Wörter der BIP-39 Wortliste abgebildet — ein vollständig unabhängiger Seed."
+                  />
+                </StageGroup>
               </>
             )}
 
             {app !== "bip39" && (
               <>
                 <PipelineArrow label={app === "wif" ? "WIF Encoding" : "HEX Output"} />
-                <HexBlock
-                  label={`5 · ${app === "wif" ? "Private Key (Raw)" : "HEX Entropy"}`}
-                  hex={toHex(state.entropyBytes)}
-                  colorClass="bg-accent-success/12 text-[#6ee7b7]"
-                />
+
+                <StageGroup color="#6ee7b7" label="Output" stageNumber={4}>
+                  <HexBlock
+                    label={app === "wif" ? "Private Key (Raw)" : "HEX Entropy"}
+                    hex={toHex(state.entropyBytes)}
+                    colorClass="bg-accent-success/12 text-[#6ee7b7]"
+                  />
+                  <StageInfo
+                    color="#6ee7b7"
+                    text={app === "wif" ? "32 Bytes Raw Entropy, bereit zur WIF-Kodierung als Bitcoin Private Key." : "Rohe Hex-Entropy für beliebige Anwendungen."}
+                  />
+                </StageGroup>
               </>
             )}
 

@@ -36,7 +36,7 @@ CLAUDE_CODE_MAX_OUTPUT_TOKENS=64000 claude --resume 796aa5c7-023f-4775-a3cb-f73d
   - Base58 & Bech32 Encoding-Lab — wie Adressen aufgebaut sind
   - Icon: `address`
 
-- [ ] **bip85** — BIP-85 Child Seeds
+- [x] **bip85** — BIP-85 Child Seeds
   - Wie aus einem Master-Seed weitere unabhängige Seeds abgeleitet werden
   - Icon: `seedling`
 
