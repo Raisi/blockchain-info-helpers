@@ -10,6 +10,24 @@ interface QuantumThreatProps {
   footer?: React.ReactNode;
 }
 
+/** Simple hex RGB lerp for canvas color transitions */
+function lerpColor(a: string, b: string, t: number): string {
+  const pa = [
+    parseInt(a.slice(1, 3), 16),
+    parseInt(a.slice(3, 5), 16),
+    parseInt(a.slice(5, 7), 16),
+  ];
+  const pb = [
+    parseInt(b.slice(1, 3), 16),
+    parseInt(b.slice(3, 5), 16),
+    parseInt(b.slice(5, 7), 16),
+  ];
+  const r = Math.round(pa[0] + (pb[0] - pa[0]) * t);
+  const g = Math.round(pa[1] + (pb[1] - pa[1]) * t);
+  const bl = Math.round(pa[2] + (pb[2] - pa[2]) * t);
+  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${bl.toString(16).padStart(2, "0")}`;
+}
+
 export default function QuantumThreat({ footer }: QuantumThreatProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -24,6 +42,7 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
         dots: number;
         forwardArrow: number;
         reverseArrow: number;
+        quantumSearch: number;
         quantumPulse: number;
         labels: number;
       }
@@ -155,10 +174,17 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
         ctx.beginPath();
         ctx.moveTo(kX - 12, arrowY);
         ctx.lineTo(arrowEndX, arrowY);
-        ctx.strokeStyle =
-          progress.quantumPulse > 0 ? "#f59e0b" : "#ef4444";
-        ctx.lineWidth = 2.5;
-        if (progress.quantumPulse === 0) {
+        if (progress.quantumPulse > 0) {
+          ctx.strokeStyle = "#f59e0b";
+          ctx.lineWidth = 2.5;
+        } else if (progress.quantumSearch > 0) {
+          ctx.strokeStyle = lerpColor("#ef4444", "#f59e0b", progress.quantumSearch);
+          ctx.lineWidth = 2.5;
+          const dashGap = 4 * (1 - progress.quantumSearch);
+          ctx.setLineDash([6, Math.max(0.5, dashGap)]);
+        } else {
+          ctx.strokeStyle = "#ef4444";
+          ctx.lineWidth = 2.5;
           ctx.setLineDash([6, 4]);
         }
         ctx.stroke();
@@ -172,12 +198,16 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
           ctx.lineTo(arrowEndX + 8, arrowY + 5);
           ctx.closePath();
           ctx.fillStyle =
-            progress.quantumPulse > 0 ? "#f59e0b" : "#ef4444";
+            progress.quantumPulse > 0
+              ? "#f59e0b"
+              : progress.quantumSearch > 0
+                ? lerpColor("#ef4444", "#f59e0b", progress.quantumSearch)
+                : "#ef4444";
           ctx.fill();
         }
 
-        // Label
-        if (progress.labels > 0 && progress.quantumPulse === 0) {
+        // Label: classical (before quantum search)
+        if (progress.labels > 0 && progress.quantumSearch === 0) {
           ctx.globalAlpha = progress.labels;
           ctx.fillStyle = "#ef4444";
           ctx.font = "bold 12px JetBrains Mono, monospace";
@@ -193,7 +223,34 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
           ctx.globalAlpha = 1;
         }
 
-        // Quantum label
+        // Label: quantum search in progress
+        if (progress.quantumSearch > 0 && progress.quantumPulse === 0) {
+          ctx.globalAlpha = progress.quantumSearch;
+          const searchColor = lerpColor("#ef4444", "#f59e0b", progress.quantumSearch);
+          ctx.fillStyle = searchColor;
+          ctx.font = "bold 12px JetBrains Mono, monospace";
+          ctx.textAlign = "center";
+          ctx.fillText("Shor-Algorithmus...", (gX + kX) / 2, arrowY + 22);
+          ctx.font = "10px JetBrains Mono, monospace";
+          ctx.fillStyle = "#94a3b8";
+          ctx.fillText("Quanten-Suche nach k", (gX + kX) / 2, arrowY + 38);
+
+          // Animated particles along the arrow path
+          const now = Date.now();
+          const particleCount = 5;
+          for (let i = 0; i < particleCount; i++) {
+            const phase = ((now / 600 + i / particleCount) % 1);
+            const px = kX - 12 - (kX - gX - 24) * phase;
+            const particleAlpha = Math.sin(phase * Math.PI) * progress.quantumSearch;
+            ctx.beginPath();
+            ctx.arc(px, arrowY, 3, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(245, 158, 11, ${particleAlpha * 0.8})`;
+            ctx.fill();
+          }
+          ctx.globalAlpha = 1;
+        }
+
+        // Label: quantum result
         if (progress.quantumPulse > 0) {
           ctx.globalAlpha = progress.quantumPulse;
 
@@ -207,7 +264,7 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
           ctx.font = "bold 13px JetBrains Mono, monospace";
           ctx.textAlign = "center";
           ctx.fillText(
-            "Shor: k gefunden!",
+            "Shor: k aus K berechnet!",
             (gX + kX) / 2,
             arrowY + 22
           );
@@ -215,7 +272,7 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
           ctx.font = "10px JetBrains Mono, monospace";
           ctx.fillStyle = "#94a3b8";
           ctx.fillText(
-            "Quanten: O(n\u00b3)",
+            "Quanten: O(n\u00b3) \u2014 ECDLP gel\u00f6st",
             (gX + kX) / 2,
             arrowY + 38
           );
@@ -264,6 +321,7 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
       dots: 0,
       forwardArrow: 0,
       reverseArrow: 0,
+      quantumSearch: 0,
       quantumPulse: 0,
       labels: 0,
     };
@@ -316,7 +374,19 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
         2.0
       );
 
-      // Phase 4: Quantum effect — reverse arrow changes
+      // Phase 3b: Quantum search — Shor running
+      tl.to(
+        progress,
+        {
+          quantumSearch: 1,
+          duration: 1.2,
+          ease: "power2.inOut",
+          onUpdate: () => drawScene(canvas, progress),
+        },
+        3.3
+      );
+
+      // Phase 4: Quantum effect — reverse arrow changes (shifted)
       tl.to(
         progress,
         {
@@ -325,10 +395,10 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
           ease: "power2.inOut",
           onUpdate: () => drawScene(canvas, progress),
         },
-        3.5
+        4.8
       );
 
-      // Phase 5: Stagger cards
+      // Phase 5: Stagger cards (shifted)
       if (cardsRef.current) {
         tl.from(
           cardsRef.current.children,
@@ -339,7 +409,7 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
             stagger: 0.15,
             ease: "power3.out",
           },
-          4.0
+          5.3
         );
       }
     }, containerRef);
@@ -392,19 +462,29 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
           <p className="mb-2 font-display text-xs font-medium uppercase tracking-wider text-accent-danger">
             Shors Algorithmus
           </p>
-          <p className="text-sm text-text-secondary">
-            Quanten-Superposition erm&ouml;glicht eine polynomielle L&ouml;sung:{" "}
-            <span className="font-mono text-text-primary">O(n&sup3;)</span>{" "}
-            statt klassisch{" "}
-            <span className="font-mono text-text-primary">
-              O(2<sup>n/2</sup>)
-            </span>
-            .
-          </p>
-          <p className="mt-2 text-xs text-text-muted">
-            Ein ausreichend gro&szlig;er Quantencomputer k&ouml;nnte k aus K und
-            G in Stunden berechnen.
-          </p>
+          <div className="space-y-2 text-sm text-text-secondary">
+            <p>
+              <span className="text-text-primary font-medium">Das Problem:</span>{" "}
+              Gegeben: Public Key K und Generator G. Gesucht: der Private Key k,
+              sodass k &times; G = K. Klassisch ist dieses &bdquo;diskrete
+              Logarithmus-Problem&ldquo; (ECDLP) praktisch unl&ouml;sbar.
+            </p>
+            <p>
+              <span className="text-text-primary font-medium">Quantenangriff:</span>{" "}
+              Shors Algorithmus nutzt Quanten-Superposition, um viele Werte
+              gleichzeitig zu testen. Er wandelt das ECDLP in ein
+              Periodenfindungs-Problem um: In einer speziell konstruierten Funktion
+              versteckt sich k als Periode. Ein Quantencomputer kann diese Periode
+              effizient mithilfe der Quanten-Fourier-Transformation (QFT) extrahieren.
+            </p>
+            <p>
+              <span className="text-text-primary font-medium">Ergebnis:</span>{" "}
+              Statt ~2<sup>128</sup> Operationen ben&ouml;tigt Shor nur{" "}
+              <span className="font-mono text-text-primary">O(n&sup3;)</span>{" "}
+              Schritte &mdash; polynomiell statt exponentiell. Ein ausreichend
+              gro&szlig;er Quantencomputer k&ouml;nnte k in Stunden finden.
+            </p>
+          </div>
         </div>
 
         {/* Card 3: Current Status */}
