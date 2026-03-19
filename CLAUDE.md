@@ -351,6 +351,17 @@ pnpm type-check   # TypeScript prüfen (tsc --noEmit)
 
 ---
 
+## Fachliche Referenzen
+
+Für Referenzen zu Bitcoin-Algorithmen, -Technologien oder BIP-Spezifikationen kann das offizielle BIPs-Repository als Kontext herangezogen werden:
+
+- **Repository:** `https://github.com/bitcoin/bips/`
+- Enthält alle offiziellen Bitcoin Improvement Proposals (BIP-32, BIP-39, BIP-44, BIP-84, BIP-85, etc.)
+- Nutze dieses Repo um korrekte Algorithmus-Details, Feld-Definitionen, Testdaten und Referenz-Implementierungen nachzuschlagen
+- Bei Unsicherheit über kryptografische Abläufe oder Datenformate: BIP-Originaltext als Source of Truth verwenden
+
+---
+
 ## Offene Entscheidungen (mit Rainer klären)
 
 - [ ] Domain / Hosting (Vercel?)

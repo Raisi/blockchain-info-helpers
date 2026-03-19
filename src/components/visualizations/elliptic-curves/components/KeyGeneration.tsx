@@ -401,16 +401,68 @@ export default function KeyGeneration({
 
   const mainUI = (
     <div ref={mainUIRef} className="space-y-4">
-      {/* Context banner */}
-      <div className="rounded-lg border border-accent-primary/20 bg-accent-primary/5 p-3">
-        <p className="text-sm text-text-primary">
-          Reelle Kurve &rarr;{" "}
-          <span className="text-accent-primary">Endlicher K&ouml;rper</span>{" "}
-          (mod p)
+      {/* Bridge explanation: Tab 3 → Tab 4 mapping */}
+      <div className="rounded-lg border border-accent-primary/20 bg-accent-primary/5 p-4">
+        <p className="mb-3 font-display text-xs font-medium uppercase tracking-wider text-accent-primary">
+          Was sich &auml;ndert &mdash; und was gleich bleibt
         </p>
-        <p className="text-xs text-text-muted">
-          Gleiche Mathematik, &uuml;ber diskreten Punkten. Skalar n ={" "}
-          {scalar} &rarr; Private Key k.
+        <div className="grid grid-cols-[1fr_auto_1fr] gap-x-2 gap-y-1 text-xs">
+          <span className="font-display text-[10px] font-medium uppercase tracking-wider text-accent-secondary">Tab 3 (Lernmodell)</span>
+          <span />
+          <span className="font-display text-[10px] font-medium uppercase tracking-wider text-accent-primary">Tab 4 (Bitcoin)</span>
+
+          <span className="text-text-secondary">Beliebiger Punkt P</span>
+          <span className="text-accent-primary">&rarr;</span>
+          <span className="text-text-primary">Fester Generator G</span>
+
+          <span className="text-text-secondary">Skalar n = {scalar}</span>
+          <span className="text-accent-primary">&rarr;</span>
+          <span className="text-text-primary">256-Bit-Zahl k (Private Key)</span>
+
+          <span className="text-text-secondary">Ergebnis n &times; P</span>
+          <span className="text-accent-primary">&rarr;</span>
+          <span className="text-text-primary">Ergebnis k &times; G = K (Public Key)</span>
+
+          <span className="text-text-secondary">Reelle Zahlen (&real;)</span>
+          <span className="text-accent-primary">&rarr;</span>
+          <span className="text-text-primary">Endlicher K&ouml;rper (&#120125;&#8346;, mod p)</span>
+        </div>
+        <p className="mt-3 text-xs text-text-muted">
+          Die Mathematik ist identisch: Skalare Multiplikation auf einer
+          elliptischen Kurve. Nur die Zahlen sind astronomisch gr&ouml;&szlig;er.
+        </p>
+      </div>
+
+      {/* Notation legend */}
+      <div className="rounded-lg border border-border-subtle bg-bg-card p-3">
+        <p className="mb-2 font-display text-[10px] font-medium uppercase tracking-wider text-text-muted">
+          Notation
+        </p>
+        <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 font-mono text-xs">
+          <span className="text-accent-warning">k</span>
+          <span className="text-text-secondary">Private Key (geheim, 256-Bit Zufallszahl)</span>
+          <span className="text-accent-success">K</span>
+          <span className="text-text-secondary">Public Key (&ouml;ffentlich, Punkt auf der Kurve)</span>
+          <span className="text-accent-primary">G</span>
+          <span className="text-text-secondary">Generator-Punkt (fest definiert in secp256k1)</span>
+        </div>
+        <p className="mt-2 font-mono text-xs text-text-primary">
+          <span className="text-accent-success">K</span> = <span className="text-accent-warning">k</span> &times; <span className="text-accent-primary">G</span>
+          <span className="ml-2 text-text-muted">(Einweg-Berechnung)</span>
+        </p>
+      </div>
+
+      {/* "Woher kommt k?" info card */}
+      <div className="rounded-lg border border-accent-warning/20 bg-accent-warning/5 p-3">
+        <p className="mb-1 font-display text-xs font-medium text-accent-warning">
+          Woher kommt der Private Key k?
+        </p>
+        <p className="text-xs text-text-secondary">
+          <span className="font-mono text-text-primary">k</span> ist eine kryptografisch sichere
+          Zufallszahl zwischen 1 und n&minus;1 (n = Ordnung der Kurve &asymp; 2&sup2;&sup5;&sup6;).
+          Dein Browser erzeugt sie &uuml;ber{" "}
+          <span className="font-mono text-accent-primary">crypto.getRandomValues()</span> &mdash;
+          32 Bytes reiner Zufall, keine Ableitung, kein Algorithmus.
         </p>
       </div>
 
@@ -428,40 +480,49 @@ export default function KeyGeneration({
       {/* Key display */}
       {privateKeyHex && (
         <div className="space-y-3">
-          {/* Private Key */}
+          {/* Private Key k */}
           <div
             ref={privRef}
             className="rounded-lg border border-border-subtle bg-bg-card p-4"
           >
-            <p className="mb-2 font-display text-xs font-medium uppercase tracking-wider text-accent-warning">
-              Private Key (256 Bit)
+            <p className="mb-1 font-display text-xs font-medium uppercase tracking-wider text-accent-warning">
+              Private Key <span className="font-mono normal-case">k</span> (256 Bit)
+            </p>
+            <p className="mb-2 text-[10px] text-text-muted">
+              Deine geheime Zufallszahl &mdash; nur du kennst sie
             </p>
             <p className="break-all font-mono text-xs leading-relaxed text-text-primary">
               {displayHex}
             </p>
-            <p className="mt-2 text-xs text-text-muted">
-              Zuf&auml;llige Zahl zwischen 1 und n-1
-            </p>
           </div>
 
-          {/* Arrow */}
+          {/* Arrow: k × G = K */}
           <div
             ref={arrowRef}
             className="flex items-center justify-center"
           >
-            <div className="rounded-lg border border-border-subtle bg-bg-card px-3 py-2 text-center">
-              <p className="font-display text-lg text-accent-primary">k &times; G</p>
-              <p className="text-[10px] text-text-muted">k &times; Generator</p>
+            <div className="rounded-lg border border-accent-primary/30 bg-accent-primary/5 px-4 py-3 text-center">
+              <p className="font-display text-lg text-accent-primary">
+                <span className="text-accent-warning">k</span> &times; <span className="text-accent-primary">G</span> = <span className="text-accent-success">K</span>
+              </p>
+              <p className="mt-1 text-[10px] text-text-secondary">
+                Skalare Multiplikation: Der Private Key{" "}
+                <span className="font-mono text-accent-warning">k</span> wird mit dem
+                Generator <span className="font-mono text-accent-primary">G</span> multipliziert
+              </p>
             </div>
           </div>
 
-          {/* Public Key */}
+          {/* Public Key K */}
           <div
             ref={pubRef}
             className="rounded-lg border border-border-subtle bg-bg-card p-4"
           >
-            <p className="mb-2 font-display text-xs font-medium uppercase tracking-wider text-accent-success">
-              Public Key (komprimiert)
+            <p className="mb-1 font-display text-xs font-medium uppercase tracking-wider text-accent-success">
+              Public Key <span className="font-mono normal-case">K</span> (komprimiert, 33 Bytes)
+            </p>
+            <p className="mb-2 text-[10px] text-text-muted">
+              Das Ergebnis von k &times; G &mdash; kann jeder sehen
             </p>
             <p className="break-all font-mono text-xs leading-relaxed text-text-primary">
               {publicKeyHex}
@@ -483,35 +544,56 @@ export default function KeyGeneration({
       {/* Conceptual comparison */}
       <div className="rounded-lg border border-accent-secondary/20 bg-accent-secondary/5 p-4">
         <p className="mb-3 font-display text-xs font-medium uppercase tracking-wider text-accent-secondary">
-          Vergleich: Dein Skalar vs. echter Key
+          Gleiche Operation, anderer Ma&szlig;stab
         </p>
         <div className="space-y-2 font-mono text-xs">
-          <div className="flex flex-wrap gap-x-4">
-            <span className="text-text-muted">Dein Skalar (Tab 3):</span>
+          <div className="flex flex-wrap gap-x-3">
+            <span className="w-12 text-text-muted">Tab 3:</span>
             <span className="text-text-primary">
-              n = {scalar} &times; G
+              n &times; P &rarr; n = {scalar}{" "}
+              <span className="text-text-muted">(klein, zum Lernen)</span>
               {scalarPublicKey && (
                 <span className="text-text-secondary">
-                  {" "}= ({scalarPublicKey.x})
+                  {" "}&rarr; ({scalarPublicKey.x})
                 </span>
               )}
             </span>
           </div>
-          {privateKeyHex && (
-            <div className="flex flex-wrap gap-x-4">
-              <span className="text-text-muted">Echter Private Key:</span>
-              <span className="text-text-primary">
-                k = {privateKeyHex.slice(0, 8)}&hellip; &times; G = (
-                {publicKeyX.slice(0, 8)}&hellip;)
-              </span>
-            </div>
-          )}
+          <div className="flex flex-wrap gap-x-3">
+            <span className="w-12 text-text-muted">Tab 4:</span>
+            <span className="text-text-primary">
+              k &times; G &rarr; k = {privateKeyHex ? (
+                <>{privateKeyHex.slice(0, 8)}&hellip;</>
+              ) : (
+                <span className="text-text-muted">[noch nicht generiert]</span>
+              )}{" "}
+              <span className="text-text-muted">(256 Bit, f&uuml;r Bitcoin)</span>
+              {privateKeyHex && (
+                <span className="text-text-secondary">
+                  {" "}&rarr; ({publicKeyX.slice(0, 8)}&hellip;)
+                </span>
+              )}
+            </span>
+          </div>
         </div>
-        <p className="mt-3 text-xs text-text-secondary">
-          In Tab 3 hast du gesehen: <strong className="text-text-primary">n = {scalar} &times; P</strong> &uuml;ber
-          reellen Zahlen. Bei Bitcoin ist n eine 256-Bit-Zufallszahl und P der
-          Generator G &mdash; aber das Prinzip ist identisch.
-        </p>
+        <div className="mt-3 space-y-1 text-xs text-text-secondary">
+          <p>
+            <span className="font-mono text-accent-warning">n</span> und{" "}
+            <span className="font-mono text-accent-warning">k</span> sind beides Skalare
+            (ganze Zahlen).{" "}
+            <span className="font-mono text-accent-primary">P</span> und{" "}
+            <span className="font-mono text-accent-primary">G</span> sind beides Kurvenpunkte.
+          </p>
+          <p>
+            Die Operation &times; ist beides Mal Punkt-Multiplikation via Double-and-Add.
+          </p>
+          <p className="text-text-muted">
+            Der einzige Unterschied: Bei Bitcoin ist{" "}
+            <span className="font-mono text-accent-warning">k</span> so gro&szlig;, dass niemand
+            aus <span className="font-mono text-accent-success">K</span> = <span className="font-mono text-accent-warning">k</span> &times; <span className="font-mono text-accent-primary">G</span> das{" "}
+            <span className="font-mono text-accent-warning">k</span> zur&uuml;ckrechnen kann (ECDLP).
+          </p>
+        </div>
       </div>
 
       {/* Info box */}

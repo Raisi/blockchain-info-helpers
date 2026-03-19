@@ -1,3 +1,7 @@
+## BIP Informations: 
+https://github.com/bitcoin/bips/
+
+
 ## Bugs
 Flash when clicking page change first time
 
