@@ -31,7 +31,6 @@ function lerpColor(a: string, b: string, t: number): string {
 export default function QuantumThreat({ footer }: QuantumThreatProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
   const animRanRef = useRef(false);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
 
@@ -437,20 +436,6 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
         9.8
       );
 
-      // Phase 5: Stagger cards (10.5s)
-      if (cardsRef.current) {
-        tl.from(
-          cardsRef.current.children,
-          {
-            opacity: 0,
-            y: 16,
-            duration: 0.6,
-            stagger: 0.15,
-            ease: "power3.out",
-          },
-          10.5
-        );
-      }
     }, containerRef);
 
     return () => {
@@ -479,7 +464,7 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
       </div>
 
       {/* RIGHT: Info cards */}
-      <div ref={cardsRef} className="space-y-3">
+      <div className="space-y-3">
         {/* Card 1: Classical Security */}
         <div className="rounded-lg border border-accent-success/30 bg-accent-success/5 p-4">
           <p className="mb-2 font-display text-xs font-medium uppercase tracking-wider text-accent-success">
