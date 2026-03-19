@@ -27,8 +27,8 @@ export default function EllipticCurvesVisualizer() {
   const [additionResultPoint, setAdditionResultPoint] =
     useState<CurvePoint2D | null>(null);
   const [scalar, setScalar] = useState<number>(SCALAR_DEFAULT);
-  const [unlockedTabs, setUnlockedTabs] = useState<Set<string>>(
-    new Set(["curve"])
+  const [unlockedTabs] = useState<Set<string>>(
+    new Set(["curve", "addition", "scalar", "keygen", "quantum"])
   );
   const [completedTabs, setCompletedTabs] = useState<Set<string>>(new Set());
   const [completion, setCompletion] =
@@ -48,15 +48,13 @@ export default function EllipticCurvesVisualizer() {
     quantum: null,
   });
 
-  // Completion effect: unlock next tab when criteria met
+  // Completion effect: mark tabs as completed when criteria met
   useEffect(() => {
     for (let i = 0; i < TAB_ORDER.length - 1; i++) {
       const tabId = TAB_ORDER[i];
       const check = COMPLETION_CHECKS[tabId];
       if (check && check(completion) && !completedTabs.has(tabId)) {
         setCompletedTabs((prev) => new Set(prev).add(tabId));
-        const nextTab = TAB_ORDER[i + 1];
-        setUnlockedTabs((prev) => new Set(prev).add(nextTab));
       }
     }
   }, [completion, completedTabs]);

@@ -45,6 +45,7 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
         quantumSearch: number;
         quantumPulse: number;
         labels: number;
+        classicalEmphasis: number;
       }
     ) => {
       const ctx = canvas.getContext("2d");
@@ -209,17 +210,42 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
         // Label: classical (before quantum search)
         if (progress.labels > 0 && progress.quantumSearch === 0) {
           ctx.globalAlpha = progress.labels;
-          ctx.fillStyle = "#ef4444";
-          ctx.font = "bold 12px JetBrains Mono, monospace";
-          ctx.textAlign = "center";
-          ctx.fillText("k = ?", (gX + kX) / 2, arrowY + 22);
+          const midX = (gX + kX) / 2;
+
+          // Classical emphasis: pulsing red glow + larger font + extra line
+          if (progress.classicalEmphasis > 0) {
+            const pulse = 0.5 + 0.5 * Math.sin(Date.now() / 150);
+            ctx.shadowColor = "#ef4444";
+            ctx.shadowBlur = 12 + 8 * pulse * progress.classicalEmphasis;
+            const fontSize = 12 + 2 * progress.classicalEmphasis;
+            ctx.fillStyle = "#ef4444";
+            ctx.font = `bold ${fontSize}px JetBrains Mono, monospace`;
+            ctx.textAlign = "center";
+            ctx.fillText("k = ?", midX, arrowY + 22);
+            ctx.shadowBlur = 0;
+          } else {
+            ctx.fillStyle = "#ef4444";
+            ctx.font = "bold 12px JetBrains Mono, monospace";
+            ctx.textAlign = "center";
+            ctx.fillText("k = ?", midX, arrowY + 22);
+          }
+
           ctx.font = "10px JetBrains Mono, monospace";
           ctx.fillStyle = "#64748b";
           ctx.fillText(
             "Klassisch: unm\u00f6glich \u2192 O(2\u207f\u00b2)",
-            (gX + kX) / 2,
+            midX,
             arrowY + 38
           );
+
+          // Extra emphasis line
+          if (progress.classicalEmphasis > 0) {
+            ctx.globalAlpha = progress.labels * progress.classicalEmphasis;
+            ctx.fillStyle = "#ef4444";
+            ctx.font = "bold 10px JetBrains Mono, monospace";
+            ctx.fillText("~2\u00b9\u00b2\u2078 Operationen n\u00f6tig", midX, arrowY + 54);
+          }
+
           ctx.globalAlpha = 1;
         }
 
@@ -324,92 +350,105 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
       quantumSearch: 0,
       quantumPulse: 0,
       labels: 0,
+      classicalEmphasis: 0,
     };
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline();
       tlRef.current = tl;
 
-      // Phase 1: Dots fade in
+      // Phase 1: Dots fade in (0.0s, 1.5s)
       tl.to(progress, {
         dots: 1,
-        duration: 1,
+        duration: 1.5,
         ease: "power2.out",
         onUpdate: () => drawScene(canvas, progress),
       });
 
-      // Phase 2: Forward arrow draws
+      // Phase 2: Forward arrow draws (1.0s, 1.2s)
       tl.to(
         progress,
         {
           forwardArrow: 1,
-          duration: 0.8,
+          duration: 1.2,
           ease: "power2.inOut",
           onUpdate: () => drawScene(canvas, progress),
         },
-        0.6
+        1.0
       );
 
-      // Phase 2b: Labels fade in
+      // Phase 2b: Labels fade in (2.0s, 0.6s)
       tl.to(
         progress,
         {
           labels: 1,
-          duration: 0.4,
+          duration: 0.6,
           ease: "power2.out",
-          onUpdate: () => drawScene(canvas, progress),
-        },
-        1.2
-      );
-
-      // Phase 3: Reverse arrow draws (red, dashed)
-      tl.to(
-        progress,
-        {
-          reverseArrow: 1,
-          duration: 1,
-          ease: "power2.inOut",
           onUpdate: () => drawScene(canvas, progress),
         },
         2.0
       );
 
-      // Phase 3b: Quantum search — Shor running
+      // Phase 3: Reverse arrow draws (4.0s, 1.5s)
+      tl.to(
+        progress,
+        {
+          reverseArrow: 1,
+          duration: 1.5,
+          ease: "power2.inOut",
+          onUpdate: () => drawScene(canvas, progress),
+        },
+        4.0
+      );
+
+      // Phase 3a: Classical emphasis — pulsing red glow on "k = ?" (5.5s, 0.8s)
+      tl.to(
+        progress,
+        {
+          classicalEmphasis: 1,
+          duration: 0.8,
+          ease: "power2.out",
+          onUpdate: () => drawScene(canvas, progress),
+        },
+        5.5
+      );
+
+      // Phase 3b: Quantum search — Shor running (7.5s, 2.0s)
       tl.to(
         progress,
         {
           quantumSearch: 1,
-          duration: 1.2,
+          duration: 2.0,
           ease: "power2.inOut",
           onUpdate: () => drawScene(canvas, progress),
         },
-        3.3
+        7.5
       );
 
-      // Phase 4: Quantum effect — reverse arrow changes (shifted)
+      // Phase 4: Quantum effect — result glow (9.8s, 1.0s)
       tl.to(
         progress,
         {
           quantumPulse: 1,
-          duration: 0.8,
+          duration: 1.0,
           ease: "power2.inOut",
           onUpdate: () => drawScene(canvas, progress),
         },
-        4.8
+        9.8
       );
 
-      // Phase 5: Stagger cards (shifted)
+      // Phase 5: Stagger cards (10.5s)
       if (cardsRef.current) {
         tl.from(
           cardsRef.current.children,
           {
             opacity: 0,
             y: 16,
-            duration: 0.5,
+            duration: 0.6,
             stagger: 0.15,
             ease: "power3.out",
           },
-          5.3
+          10.5
         );
       }
     }, containerRef);
@@ -471,7 +510,7 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
             </p>
             <p>
               <span className="text-text-primary font-medium">Quantenangriff:</span>{" "}
-              Shors Algorithmus nutzt Quanten-Superposition, um viele Werte
+              Shors Algorithmus nutzt Quanten-Superpositionen, um viele Werte
               gleichzeitig zu testen. Er wandelt das ECDLP in ein
               Periodenfindungs-Problem um: In einer speziell konstruierten Funktion
               versteckt sich k als Periode. Ein Quantencomputer kann diese Periode
