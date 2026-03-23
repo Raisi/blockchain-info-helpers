@@ -138,6 +138,7 @@ export const TOPICS: readonly Topic[] = [
     icon: "pickaxe",
     category: "network",
     order: 1,
+    available: true,
   },
   {
     slug: "blockchain-structure",
