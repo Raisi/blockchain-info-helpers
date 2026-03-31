@@ -57,27 +57,21 @@ export default function NonceSearch() {
   const expectedAttempts = Math.pow(16, difficulty);
 
   // Manual mode: compute hash for entered nonce
-  const computeManualHash = useCallback(
-    async (nonceStr: string) => {
-      const n = parseInt(nonceStr, 10);
-      if (isNaN(n)) {
-        setManualHash("");
-        setManualMeetsTarget(false);
-        return;
-      }
+  useEffect(() => {
+    if (mode !== "manual" || manualNonce === "") return;
+    const n = parseInt(manualNonce, 10);
+    if (isNaN(n)) return;
+    let cancelled = false;
+    async function compute() {
       const input = blockDataPrefix + n.toString();
       const hex = await sha256(input);
+      if (cancelled) return;
       setManualHash(hex);
       setManualMeetsTarget(hex.startsWith(targetPrefix));
-    },
-    [blockDataPrefix, targetPrefix]
-  );
-
-  useEffect(() => {
-    if (mode === "manual") {
-      computeManualHash(manualNonce);
     }
-  }, [mode, manualNonce, computeManualHash]);
+    compute();
+    return () => { cancelled = true; };
+  }, [mode, manualNonce, blockDataPrefix, targetPrefix]);
 
   // Auto mode mining loop
   const stopMining = useCallback(() => {

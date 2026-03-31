@@ -26,6 +26,12 @@ export const MINING_TABS: MiningTabConfig[] = [
       "Simuliere einen Mining-Wettbewerb: Stelle die Hashrate jedes Miners ein und beobachte, wer zuerst einen gültigen Hash findet. Mehr Hashrate = höhere Wahrscheinlichkeit — aber Zufall entscheidet.",
   },
   {
+    id: "3d-process",
+    label: "3D Mining-Prozess",
+    description:
+      "Erlebe den kompletten Mining-Prozess als interaktive 3D-Animation: Vom Mempool über Block-Assembly und Nonce-Suche bis zum neuen Block in der Chain.",
+  },
+  {
     id: "adjustment",
     label: "Difficulty-Anpassung",
     description:
@@ -148,6 +154,28 @@ export const FIELD_BYTES: Record<keyof BlockHeaderData, number> = {
   timestamp: 4,
   bits: 4,
   nonce: 4,
+};
+
+export const THREE_COLORS = {
+  bgPrimary: 0x0a0e17,
+  bgSecondary: 0x111827,
+  bgCard: 0x1a1f2e,
+  accentPrimary: 0x22d3ee,
+  accentSecondary: 0x8b5cf6,
+  accentSuccess: 0x10b981,
+  accentWarning: 0xf59e0b,
+  accentDanger: 0xef4444,
+  textPrimary: 0xe2e8f0,
+  borderSubtle: 0x1e293b,
+} as const;
+
+export const FIELD_HEX_COLORS: Record<keyof BlockHeaderData, number> = {
+  version: 0x22d3ee,
+  prevHash: 0x8b5cf6,
+  merkleRoot: 0x10b981,
+  timestamp: 0xf59e0b,
+  bits: 0xef4444,
+  nonce: 0xe2e8f0,
 };
 
 export const DIFFICULTY_COMPARISON = [
