@@ -3,7 +3,39 @@ export type MiningTab =
   | "nonce-search"
   | "difficulty"
   | "race"
-  | "adjustment";
+  | "adjustment"
+  | "3d-process";
+
+export type MiningStage =
+  | "idle"
+  | "mempool"
+  | "assembly"
+  | "header"
+  | "nonce-search"
+  | "found"
+  | "chain-connect"
+  | "complete";
+
+export interface MiningSequenceState {
+  stage: MiningStage;
+  progress: number;
+  speed: number;
+  paused: boolean;
+  nonce: number;
+  hashAttempts: number;
+  foundHash: string | null;
+  lastHash: string | null;
+  startTime: number | null;
+  elapsed: number;
+}
+
+export interface HashBatchResult {
+  startNonce: number;
+  endNonce: number;
+  hashes: { nonce: number; hash: string; meetsTarget: boolean }[];
+  foundNonce: number | null;
+  foundHash: string | null;
+}
 
 export interface MiningTabConfig {
   id: MiningTab;

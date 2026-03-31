@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { gsap } from "@/lib/gsap";
 import { MINING_TABS } from "./constants";
 import type { MiningTab } from "./types";
@@ -10,12 +11,28 @@ import DifficultyTarget from "./components/DifficultyTarget";
 import MiningRace from "./components/MiningRace";
 import DifficultyAdjustment from "./components/DifficultyAdjustment";
 
+const MiningProcess3D = dynamic(
+  () => import("./components/MiningProcess3D"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[600px] items-center justify-center rounded-xl border border-border-subtle bg-bg-card">
+        <div className="text-center">
+          <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-accent-primary border-t-transparent" />
+          <p className="font-display text-sm text-text-secondary">3D-Szene wird geladen...</p>
+        </div>
+      </div>
+    ),
+  }
+);
+
 const TAB_COMPONENTS: Record<MiningTab, React.ComponentType> = {
   anatomy: BlockAnatomy,
   "nonce-search": NonceSearch,
   difficulty: DifficultyTarget,
   race: MiningRace,
   adjustment: DifficultyAdjustment,
+  "3d-process": MiningProcess3D,
 };
 
 export default function MiningVisualizer() {
