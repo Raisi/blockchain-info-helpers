@@ -63,7 +63,7 @@ CLAUDE_CODE_MAX_OUTPUT_TOKENS=64000 claude --resume c21f5fa5-5d74-4ae9-baaf-a5e6
 
 ### Netzwerk & Konsens (`network`)
 
-- [ ] **mining** — Mining Simulator
+- [x] **mining** — Mining Simulator
   - Nonce finden + Difficulty — wie neue Blöcke entstehen
   - Icon: `pickaxe`
 
