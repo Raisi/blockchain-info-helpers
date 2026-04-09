@@ -351,6 +351,13 @@ pnpm type-check   # TypeScript prüfen (tsc --noEmit)
 
 ---
 
+## Projektdokumentation
+
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — Tech Stack, Verzeichnisstruktur, Datenfluss, Design-System-Tokens, GSAP-Konventionen, Build/Deploy
+- [`docs/GOAL.md`](docs/GOAL.md) — Projektziel, vollständige Topic-Roadmap mit Status, Design-Intent, offene Entscheidungen
+
+---
+
 ## Fachliche Referenzen
 
 Für Referenzen zu Bitcoin-Algorithmen, -Technologien oder BIP-Spezifikationen kann das offizielle BIPs-Repository als Kontext herangezogen werden:
