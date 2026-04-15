@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback, Fragment } from "react";
+import Link from "next/link";
+import { secp256k1 } from "@noble/curves/secp256k1";
 import type {
   MasterKey,
   Bip44Config,
@@ -823,6 +825,7 @@ function Bip44Step({
           Ableitung läuft…
         </div>
       ) : fk ? (
+        <Fragment>
         <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
           <div className="rounded-xl border border-accent-success/40 bg-bg-primary p-5">
             <div className="mb-3 font-code text-[13px] font-bold uppercase tracking-wider text-accent-success">
@@ -855,6 +858,15 @@ function Bip44Step({
             </div>
           </div>
         </div>
+        <div className="mt-4 flex justify-end">
+          <Link
+            href={`/adressen?pubkey=${toHex(secp256k1.getPublicKey(fk.priv, true))}`}
+            className="font-mono text-xs text-[var(--text-muted)] transition-[color] hover:text-[var(--accent-primary)]"
+          >
+            Diesen Public Key zur Bitcoin-Adresse konvertieren → Address Lab
+          </Link>
+        </div>
+        </Fragment>
       ) : null}
     </div>
   );
