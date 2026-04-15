@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import Link from "next/link";
 import { sha256 } from "@noble/hashes/sha256";
 import { toHex, fmtHex } from "../crypto-utils";
 
@@ -155,6 +156,14 @@ export function HashToBech32Pipeline({
           style={{ textShadow: "0 0 20px rgba(34, 211, 238, 0.3)" }}
         >
           {address}
+        </div>
+        <div className="mt-3 flex justify-center">
+          <Link
+            href={`/adressen?pubkey=${toHex(childPubKey)}`}
+            className="font-mono text-xs text-[var(--text-muted)] transition-[color] hover:text-[var(--accent-primary)]"
+          >
+            Wie wird dieser Public Key zur Adresse? → Address Lab
+          </Link>
         </div>
       </div>
     </div>
