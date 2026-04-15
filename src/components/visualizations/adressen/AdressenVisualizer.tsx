@@ -217,10 +217,15 @@ export function AdressenVisualizer({ initialPubkey }: AdressenVisualizerProps) {
     return () => ctx.revert();
   }, []);
 
+  // Kill any in-flight step tween on unmount
+  const stepTweenRef = useRef<ReturnType<typeof gsap.from> | null>(null);
+  useEffect(() => () => { stepTweenRef.current?.kill(); }, []);
+
   // Step transition animation
   const animateStepIn = useCallback(() => {
     if (!contentRef.current) return;
-    gsap.from(contentRef.current, {
+    stepTweenRef.current?.kill();
+    stepTweenRef.current = gsap.from(contentRef.current, {
       opacity: 0,
       y: 15,
       duration: 0.4,
