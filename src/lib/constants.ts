@@ -80,6 +80,7 @@ export const TOPICS: readonly Topic[] = [
     icon: "address",
     category: "keys",
     order: 4,
+    available: true,
   },
   {
     slug: "bip85",
