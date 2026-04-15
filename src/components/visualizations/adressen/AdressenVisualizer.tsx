@@ -100,7 +100,7 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="flex items-center gap-1.5 rounded-lg border border-[var(--border-active)] bg-transparent px-3 py-1.5 font-mono text-xs text-[var(--text-secondary)] transition-all hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)]"
+      className="flex items-center gap-1.5 rounded-lg border border-[var(--border-active)] bg-transparent px-3 py-1.5 font-mono text-xs text-[var(--text-secondary)] transition-[border-color,color] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)]"
     >
       {copied ? "✓ Kopiert" : "Kopieren"}
     </button>
@@ -329,7 +329,7 @@ export function AdressenVisualizer({ initialPubkey }: AdressenVisualizerProps) {
         <div data-hero-animate className="flex flex-wrap gap-2">
           <button
             onClick={handleRandomize}
-            className="flex items-center gap-2 rounded-lg border border-[var(--border-active)] bg-transparent px-4 py-2 font-mono text-sm text-[var(--text-secondary)] transition-all hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)]"
+            className="flex items-center gap-2 rounded-lg border border-[var(--border-active)] bg-transparent px-4 py-2 font-mono text-sm text-[var(--text-secondary)] transition-[border-color,color] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)]"
           >
             ↻ Zufälliger Key
           </button>
@@ -585,7 +585,7 @@ export function AdressenVisualizer({ initialPubkey }: AdressenVisualizerProps) {
 
         <button
           onClick={handleRestart}
-          className="w-full rounded-xl border border-[var(--border-active)] bg-transparent py-3 font-mono text-sm text-[var(--text-secondary)] transition-all hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)]"
+          className="w-full rounded-xl border border-[var(--border-active)] bg-transparent py-3 font-mono text-sm text-[var(--text-secondary)] transition-[border-color,color] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)]"
         >
           ↻ Neuen Key generieren
         </button>
@@ -605,7 +605,7 @@ export function AdressenVisualizer({ initialPubkey }: AdressenVisualizerProps) {
           return (
             <div key={s.id} className="flex items-center">
               <button
-                className={`flex flex-shrink-0 items-center gap-3 rounded-xl border px-4 py-3 font-mono text-sm transition-all ${
+                className={`flex flex-shrink-0 items-center gap-3 rounded-xl border px-4 py-3 font-mono text-sm transition-[border-color,color] ${
                   isActive
                     ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-white"
                     : isDone
@@ -653,7 +653,7 @@ export function AdressenVisualizer({ initialPubkey }: AdressenVisualizerProps) {
         <div data-hero-animate className="mt-6 flex items-center justify-between">
           {activeStep > 1 ? (
             <button
-              className="flex items-center gap-2 rounded-lg border border-[var(--border-active)] bg-transparent px-4 py-2.5 font-mono text-sm text-[var(--text-secondary)] transition-all hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)]"
+              className="flex items-center gap-2 rounded-lg border border-[var(--border-active)] bg-transparent px-4 py-2.5 font-mono text-sm text-[var(--text-secondary)] transition-[border-color,color] hover:border-[var(--accent-primary)] hover:text-[var(--accent-primary)]"
               onClick={handlePrev}
             >
               ← Zurück
@@ -662,7 +662,7 @@ export function AdressenVisualizer({ initialPubkey }: AdressenVisualizerProps) {
             <div />
           )}
           <button
-            className={`flex items-center gap-2 rounded-lg border px-4 py-2.5 font-mono text-sm transition-all ${
+            className={`flex items-center gap-2 rounded-lg border px-4 py-2.5 font-mono text-sm transition-[border-color,color] ${
               canProceed
                 ? "border-[var(--accent-primary)] bg-[var(--accent-primary)]/15 text-white hover:bg-[var(--accent-primary)]/30"
                 : "cursor-not-allowed border-[var(--border-subtle)] text-[var(--text-muted)] opacity-50"
