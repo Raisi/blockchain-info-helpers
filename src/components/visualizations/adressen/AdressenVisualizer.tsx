@@ -39,7 +39,6 @@ export function AdressenVisualizer({ initialPubkey }: AdressenVisualizerProps) {
       initialPubkey && isValidPubkey(initialPubkey)
         ? initialPubkey
         : generateRandomPubkey();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPubkeyInput(initial);
     setPubkeyHex(initial);
     setPubkeyValid(true);
@@ -50,7 +49,6 @@ export function AdressenVisualizer({ initialPubkey }: AdressenVisualizerProps) {
     if (!pubkeyValid || !pubkeyHex) return;
     try {
       const result = computeAddresses(pubkeyHex);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSha256Result(result.sha256Result);
       setHash160(result.hash160);
       setP2pkhChecksum(result.p2pkhChecksum);

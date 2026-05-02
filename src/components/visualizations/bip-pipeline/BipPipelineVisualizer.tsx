@@ -826,46 +826,46 @@ function Bip44Step({
         </div>
       ) : fk ? (
         <Fragment>
-        <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
-          <div className="rounded-xl border border-accent-success/40 bg-bg-primary p-5">
-            <div className="mb-3 font-code text-[13px] font-bold uppercase tracking-wider text-accent-success">
-              Private Key (32 Bytes)
+          <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
+            <div className="rounded-xl border border-accent-success/40 bg-bg-primary p-5">
+              <div className="mb-3 font-code text-[13px] font-bold uppercase tracking-wider text-accent-success">
+                Private Key (32 Bytes)
+              </div>
+              <div className="break-all leading-8">
+                {splitHex(toHex(fk.priv), 8).map((c, i) => (
+                  <span
+                    key={i}
+                    className="mr-1.5 mb-1 inline-block rounded bg-accent-success/12 px-2 py-1 font-code text-[15px] text-[#6ee7b7]"
+                  >
+                    {c}
+                  </span>
+                ))}
+              </div>
             </div>
-            <div className="break-all leading-8">
-              {splitHex(toHex(fk.priv), 8).map((c, i) => (
-                <span
-                  key={i}
-                  className="mr-1.5 mb-1 inline-block rounded bg-accent-success/12 px-2 py-1 font-code text-[15px] text-[#6ee7b7]"
-                >
-                  {c}
-                </span>
-              ))}
+            <div className="rounded-xl border border-accent-primary/40 bg-bg-primary p-5">
+              <div className="mb-3 font-code text-[13px] font-bold uppercase tracking-wider text-accent-primary">
+                Chain Code (32 Bytes)
+              </div>
+              <div className="break-all leading-8">
+                {splitHex(toHex(fk.chain), 8).map((c, i) => (
+                  <span
+                    key={i}
+                    className="mr-1.5 mb-1 inline-block rounded bg-accent-primary/15 px-2 py-1 font-code text-[15px] text-accent-primary"
+                  >
+                    {c}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
-          <div className="rounded-xl border border-accent-primary/40 bg-bg-primary p-5">
-            <div className="mb-3 font-code text-[13px] font-bold uppercase tracking-wider text-accent-primary">
-              Chain Code (32 Bytes)
-            </div>
-            <div className="break-all leading-8">
-              {splitHex(toHex(fk.chain), 8).map((c, i) => (
-                <span
-                  key={i}
-                  className="mr-1.5 mb-1 inline-block rounded bg-accent-primary/15 px-2 py-1 font-code text-[15px] text-accent-primary"
-                >
-                  {c}
-                </span>
-              ))}
-            </div>
+          <div className="mt-4 flex justify-end">
+            <Link
+              href={`/adressen?pubkey=${toHex(secp256k1.getPublicKey(fk.priv, true))}`}
+              className="font-mono text-xs text-[var(--text-muted)] transition-[color] hover:text-[var(--accent-primary)]"
+            >
+              Diesen Public Key zur Bitcoin-Adresse konvertieren → Address Lab
+            </Link>
           </div>
-        </div>
-        <div className="mt-4 flex justify-end">
-          <Link
-            href={`/adressen?pubkey=${toHex(secp256k1.getPublicKey(fk.priv, true))}`}
-            className="font-mono text-xs text-[var(--text-muted)] transition-[color] hover:text-[var(--accent-primary)]"
-          >
-            Diesen Public Key zur Bitcoin-Adresse konvertieren → Address Lab
-          </Link>
-        </div>
         </Fragment>
       ) : null}
     </div>
