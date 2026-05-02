@@ -5,7 +5,12 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Bitcoin Adressen" };
 
-export default function AdressenPage() {
+export default async function AdressenPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ pubkey?: string }>;
+}) {
+  const { pubkey } = await searchParams;
   return (
     <PageShell>
       <VisualizationShell
@@ -13,7 +18,7 @@ export default function AdressenPage() {
         description="Wie aus einem Public Key eine Adresse wird — Base58Check und Bech32 Encoding"
         topic="adressen"
       >
-        <AdressenVisualizer />
+        <AdressenVisualizer initialPubkey={pubkey} />
       </VisualizationShell>
     </PageShell>
   );
