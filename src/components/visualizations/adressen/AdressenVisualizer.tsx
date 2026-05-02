@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { gsap } from "@/lib/gsap";
 import {
   type Step,
@@ -14,11 +15,9 @@ import { Step2Hash160 } from "./components/Step2Hash160";
 import { Step3Encoding } from "./components/Step3Encoding";
 import { Step4Addresses } from "./components/Step4Addresses";
 
-interface AdressenVisualizerProps {
-  initialPubkey?: string;
-}
-
-export function AdressenVisualizer({ initialPubkey }: AdressenVisualizerProps) {
+export function AdressenVisualizer() {
+  const searchParams = useSearchParams();
+  const initialPubkey = searchParams.get("pubkey") ?? undefined;
   const [pubkeyHex, setPubkeyHex] = useState<string>("");
   const [pubkeyInput, setPubkeyInput] = useState<string>("");
   const [pubkeyValid, setPubkeyValid] = useState<boolean>(false);
