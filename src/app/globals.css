@@ -14,7 +14,7 @@
 
   /* Akzente */
   --accent-primary: #22d3ee;
-  --accent-secondary: #8b5cf6;
+  --accent-secondary: #2563eb;
   --accent-success: #10b981;
   --accent-warning: #f59e0b;
   --accent-danger: #ef4444;
@@ -22,7 +22,7 @@
   /* Borders & Surfaces */
   --border-subtle: #1e293b;
   --border-active: #334155;
-  --glow-primary: 0 0 20px rgba(34, 211, 238, 0.15);
+  --glow-primary: inset 0 0 0 1px rgba(34, 211, 238, 0.25), 0 4px 16px rgba(34, 211, 238, 0.06);
 
   /* Spacing-Skala */
   --space-xs: 0.25rem;

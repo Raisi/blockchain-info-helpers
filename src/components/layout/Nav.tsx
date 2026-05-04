@@ -5,32 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { gsap } from "@/lib/gsap";
 import { TOPICS, CATEGORY_LABELS, CATEGORY_ORDER } from "@/lib/constants";
+import { ICONS } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 import type { Topic, TopicCategory } from "@/types";
-
-const ICON_EMOJI: Record<string, string> = {
-  hash: "#",
-  blocks: "\u26D3",
-  key: "\uD83D\uDD11",
-  "git-branch": "\uD83C\uDF3F",
-  shield: "\uD83D\uDEE1",
-  curve: "\u223E",
-  tree: "\uD83C\uDF33",
-  pen: "\u270D",
-  address: "\uD83D\uDCE8",
-  seedling: "\uD83C\uDF31",
-  coins: "\uD83E\uDE99",
-  build: "\uD83D\uDD27",
-  code: "</>",
-  calculator: "\uD83E\uDDEE",
-  pickaxe: "\u26CF",
-  network: "\uD83C\uDF10",
-  gauge: "\u2699",
-  zap: "\u26A1",
-  signature: "\u270B",
-  "tree-branch": "\uD83C\uDF3F",
-  clock: "\u23F0",
-};
 
 function getGroupedTopics() {
   const grouped = new Map<TopicCategory, Topic[]>();
@@ -277,8 +254,8 @@ export function Nav() {
                               data-overlay-item
                               className="flex items-center gap-4 rounded-lg border-l-2 border-transparent px-4 py-3 opacity-40"
                             >
-                              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-bg-card text-lg">
-                                {ICON_EMOJI[topic.icon] ?? "\u25CF"}
+                              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-bg-card text-text-muted">
+                                {ICONS[topic.icon] ?? ICONS.hash}
                               </span>
                               <div className="min-w-0 flex-1">
                                 <div className="font-body text-sm font-semibold text-text-muted">
@@ -308,8 +285,8 @@ export function Nav() {
                                 : "border-transparent hover:border-border-active hover:bg-bg-card"
                             )}
                           >
-                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-bg-card text-lg group-hover:bg-bg-card-hover">
-                              {ICON_EMOJI[topic.icon] ?? "\u25CF"}
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-bg-card text-text-secondary group-hover:bg-bg-card-hover group-hover:text-accent-primary">
+                              {ICONS[topic.icon] ?? ICONS.hash}
                             </span>
                             <div className="min-w-0">
                               <div

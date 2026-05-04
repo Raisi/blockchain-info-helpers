@@ -16,56 +16,82 @@ export default function Home() {
         y: 40,
         opacity: 0,
         duration: 0.8,
-        stagger: 0.15,
+        stagger: 0.12,
         ease: "power3.out",
       });
-
       gsap.from("[data-animate]", {
-        y: 30,
+        y: 20,
         opacity: 0,
-        duration: 0.8,
-        stagger: 0.1,
-        delay: 0.4,
+        duration: 0.6,
+        stagger: 0.08,
+        delay: 0.5,
         ease: "power3.out",
       });
     }, heroRef);
     return () => ctx.revert();
   }, []);
 
+  const availableCount = TOPICS.filter((t) => t.available).length;
+  const totalCount = TOPICS.length;
+
   return (
     <PageShell>
       <div ref={heroRef}>
-        {/* Hero Section */}
-        <section className="pb-16 pt-12 text-center sm:pt-20">
-          <div data-hero-animate>
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border-subtle bg-bg-card px-4 py-1.5">
-              <span className="h-2 w-2 rounded-full bg-accent-success animate-pulse" />
-              <span className="font-code text-xs text-text-secondary">
-                Open Source & Interaktiv
-              </span>
-            </div>
+        {/* Hero — left-aligned */}
+        <section className="pb-20 pt-12 sm:pt-20">
+          <div data-hero-animate className="mb-5 flex items-center gap-3">
+            <span className="h-px w-6 bg-accent-primary" />
+            <span className="font-code text-xs uppercase tracking-[0.15em] text-accent-primary">
+              Open Source · Interaktiv
+            </span>
           </div>
 
           <h1
-            className="mb-6 font-display text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl"
             data-hero-animate
+            className="mb-5 font-display text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl"
           >
             Blockchain
             <br />
-            <span className="text-gradient">Visualizer</span>
+            <span className="text-accent-primary">Visualizer</span>
           </h1>
 
           <p
-            className="mx-auto mb-10 max-w-2xl text-lg text-text-secondary sm:text-xl"
             data-hero-animate
+            className="mb-10 max-w-lg text-base leading-relaxed text-text-secondary sm:text-lg"
           >
-            Open-Source-Lernplattform — Verstehe die Technologie hinter Bitcoin
-            &amp; Blockchain Schritt für Schritt durch interaktive
-            Visualisierungen.
+            Verstehe die Technologie hinter Bitcoin — von Hashing bis zur
+            Schlüsselableitung — durch interaktive Schritt-für-Schritt-Visualisierungen.
           </p>
+
+          <div
+            data-hero-animate
+            className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-text-muted"
+          >
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-display text-2xl font-bold tabular-nums text-text-primary">
+                {availableCount}
+              </span>
+              <span>verfügbar</span>
+            </div>
+            <div className="hidden h-3 w-px bg-border-subtle sm:block" />
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-display text-2xl font-bold tabular-nums text-text-primary">
+                {totalCount}
+              </span>
+              <span>geplant</span>
+            </div>
+            <div className="hidden h-3 w-px bg-border-subtle sm:block" />
+            <div className="flex items-center gap-2">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-success opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent-success" />
+              </span>
+              <span>Läuft vollständig lokal</span>
+            </div>
+          </div>
         </section>
 
-        {/* Topics Grid */}
+        {/* Topics */}
         {CATEGORY_ORDER.map((category) => {
           const topicsInCategory = TOPICS.filter(
             (t) => t.category === category
@@ -76,19 +102,19 @@ export default function Home() {
           const label = CATEGORY_LABELS[category];
 
           return (
-            <section key={category} className="mb-12">
-              <div className="mb-6 flex items-center gap-3" data-animate>
-                <div>
-                  <h2 className="font-display text-xl font-semibold text-text-primary">
+            <section key={category} className="mb-14">
+              <div className="mb-6" data-animate>
+                {label?.subtitle && (
+                  <p className="mb-1 font-code text-[10px] uppercase tracking-[0.15em] text-accent-primary/70">
+                    {label.subtitle}
+                  </p>
+                )}
+                <div className="flex items-center gap-4">
+                  <h2 className="font-display text-2xl font-bold text-text-primary">
                     {label?.title ?? category}
                   </h2>
-                  {label?.subtitle && (
-                    <p className="text-sm text-text-muted">
-                      {label.subtitle}
-                    </p>
-                  )}
+                  <div className="h-px flex-1 bg-border-subtle" />
                 </div>
-                <div className="h-px flex-1 bg-border-subtle" />
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
