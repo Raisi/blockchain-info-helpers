@@ -1,7 +1,9 @@
 "use client";
 
 import { useRef, useEffect } from "react";
+import Link from "next/link";
 import { gsap } from "@/lib/gsap";
+import { TOPICS, CATEGORY_LABELS } from "@/lib/constants";
 import type { VisualizationShellProps } from "@/types";
 
 export function VisualizationShell({
@@ -26,26 +28,48 @@ export function VisualizationShell({
     return () => ctx.revert();
   }, []);
 
+  const category = TOPICS.find((t) => t.slug === topic)?.category;
+  const categoryTitle = category ? CATEGORY_LABELS[category]?.title : undefined;
+
   return (
     <div ref={shellRef}>
-      <div className="mb-8" data-shell-animate>
-        <div className="mb-3 flex items-center gap-2">
-          <span className="rounded-md bg-accent-primary/10 px-2.5 py-1 font-code text-xs font-medium text-accent-primary">
-            {topic.toUpperCase()}
+      <div className="mb-16 flex flex-col gap-5 pt-4 sm:pt-10 lg:mb-20" data-shell-animate>
+        <Link
+          href="/"
+          className="group flex flex-wrap items-center gap-2.5 text-sm text-text-muted transition-colors hover:text-text-secondary"
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          {categoryTitle && (
+            <>
+              <span>{categoryTitle}</span>
+              <span className="text-border-active">/</span>
+            </>
+          )}
+          <span className="font-code text-xs uppercase tracking-[0.12em] text-accent-primary">
+            {topic}
           </span>
-        </div>
-        <h1 className="mb-2 font-display text-3xl font-bold text-text-primary sm:text-4xl">
+        </Link>
+        <h1 className="font-display text-4xl font-bold leading-[1.02] tracking-[-0.03em] text-text-primary text-pretty sm:text-5xl lg:text-6xl">
           {title}
         </h1>
-        <p className="text-lg text-text-secondary">{description}</p>
+        <p className="max-w-xl text-lg font-light leading-relaxed text-text-secondary text-pretty sm:text-xl">
+          {description}
+        </p>
       </div>
 
-      <div
-        className="rounded-xl border border-border-subtle bg-bg-secondary/50 p-4 sm:p-6 lg:p-8"
-        data-shell-animate
-      >
-        {children}
-      </div>
+      <div data-shell-animate>{children}</div>
     </div>
   );
 }
