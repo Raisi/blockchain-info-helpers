@@ -245,7 +245,9 @@ export function Nav() {
                     <div className="flex flex-col gap-1">
                       {grouped.get(cat)!.map((topic) => {
                         const isAvailable = topic.available === true;
-                        const isActive = pathname === `/${topic.slug}`;
+                        // trailingSlash: true → usePathname() returns "/slug/"
+                        const isActive =
+                          pathname.replace(/\/+$/, "") === `/${topic.slug}`;
 
                         if (!isAvailable) {
                           return (

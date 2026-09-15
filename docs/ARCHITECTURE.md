@@ -179,7 +179,9 @@ pnpm type-check   # tsc --noEmit
 `pnpm install --frozen-lockfile` → `pnpm type-check` → `pnpm lint` → `pnpm build` → upload
 `out/` → deploy-pages.
 `public/.nojekyll` keeps `_next/` assets servable. `basePath` is
-`/blockchain-info-helpers` in production, empty in dev.
+`/blockchain-info-helpers` in production, empty in dev. `trailingSlash: true` emits
+`<slug>/index.html`, so GitHub Pages serves both `/slug` and `/slug/`; `usePathname()`
+therefore returns `/slug/` and Nav strips the slash before comparing.
 
 Because there is no Next.js server at runtime, Next advisories about Server Actions, the
 Image Optimization API, middleware bypass or SSRF do not affect the deployed site. They

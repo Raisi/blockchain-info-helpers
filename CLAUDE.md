@@ -68,7 +68,7 @@ Kein Prisma, keine DB, keine API-Routen. Erst einbauen, wenn eine offene Entsche
 │   ├── styles/theme.ts              ← vorhanden, aktuell nirgends importiert (Tokens leicht abweichend)
 │   └── types/index.ts               ← Topic, TopicCategory, VisualizationShellProps
 ├── .github/workflows/deploy.yml
-├── next.config.ts                   ← output: "export", basePath in Prod
+├── next.config.ts                   ← output: "export", trailingSlash, basePath in Prod
 ├── eslint.config.mjs
 └── package.json
 ```
