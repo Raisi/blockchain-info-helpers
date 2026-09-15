@@ -415,10 +415,11 @@ export default function DifficultyTarget() {
           Bitcoin Real-World Vergleich
         </p>
         <p className="text-xs leading-relaxed text-text-secondary">
-          Bitcoins aktuelle Mining-Difficulty erfordert ~19 führende Hex-Nullen
-          (~74 führende Binär-Nullen). Das entspricht ~16¹⁹ ≈ 4,7 × 10²²
-          erwarteten Hash-Versuchen pro Block. Hier oben nutzen wir {DIFFICULTY_MIN}–{DIFFICULTY_MAX} Nullen
-          zur Veranschaulichung — in der Realität ist es millionenfach schwerer.
+          Bitcoins Mining-Difficulty liegt bei ~127 Billionen (Stand September 2026).
+          Das erfordert ~79 führende Binär-Nullen, also knapp 20 führende Hex-Nullen.
+          Erwartete Hash-Versuche pro Block: Difficulty × 2³² ≈ 5,5 × 10²³. Hier oben
+          nutzen wir {DIFFICULTY_MIN}–{DIFFICULTY_MAX} Nullen zur Veranschaulichung — in
+          der Realität ist es billionenfach schwerer.
         </p>
       </div>
     </div>

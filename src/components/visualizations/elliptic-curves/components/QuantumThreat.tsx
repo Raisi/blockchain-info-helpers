@@ -514,23 +514,32 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
         {/* Card 3: Current Status */}
         <div className="rounded-lg border border-accent-warning/30 bg-accent-warning/5 p-4">
           <p className="mb-2 font-display text-xs font-medium uppercase tracking-wider text-accent-warning">
-            Aktueller Stand
+            Aktueller Stand{" "}
+            <span className="normal-case tracking-normal text-text-muted">(September 2026)</span>
           </p>
           <div className="space-y-2 text-sm text-text-secondary">
             <p>
-              Heutige QCs: ~1.000&ndash;1.200{" "}
-              <span className="italic">physische</span> Qubits,
-              nahezu 0 fehlerkorrigierte <span className="italic">logische</span>.
-              <br />
-              F&uuml;r secp256k1: ~2.330 logische Qubits (13&ndash;317 Mio.
-              physische) n&ouml;tig.
+              Heutige QCs: bis ~6.000{" "}
+              <span className="italic">physische</span> Qubits (Neutralatom-Arrays),
+              ~1.100 supraleitend (IBM). Verifizierte fehlerkorrigierte{" "}
+              <span className="italic">logische</span> Qubits: max. 96 (QuEra, aus 448
+              Atomen).
+            </p>
+            <p>
+              F&uuml;r secp256k1 n&ouml;tig: ~1.200&ndash;1.450 logische Qubits.
+              Physisch je nach Architektur ~20.000 (IonQ, Ionenfalle, ~26 Tage pro
+              Key) bis &lt;500.000 (Google, supraleitend, ~10&ndash;20 Min pro Key).
             </p>
             <p className="text-xs text-text-muted">
-              Fehlerkorrektur-Overhead: ~1.000&ndash;10.000 physische pro
-              logischem Qubit (polynomiell, nicht logarithmisch).
+              Die Sch&auml;tzungen sind seit 2023 um Faktor ~20 gesunken (Litinski
+              2023: ~9 Mio. physische Qubits). Fehlerkorrektur-Overhead heute
+              ~5&ndash;350 physische pro logischem Qubit, je nach Code.
             </p>
             <p className="text-xs text-text-muted">
-              Sch&auml;tzungen: 10&ndash;20+ Jahre bis zur Bedrohung
+              Zeithorizont: IonQ plant ein fehlertolerantes 10.000-Qubit-System
+              f&uuml;r 2027; Analysten lesen aus der Google-Sch&auml;tzung
+              2029&ndash;2030 als m&ouml;glichen Zeitraum. Unabh&auml;ngige
+              Prognosen bleiben unsicher.
             </p>
           </div>
           {/* Threat meter */}
@@ -543,7 +552,7 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
               <div
                 className="h-full rounded-full"
                 style={{
-                  width: "18%",
+                  width: "35%",
                   background:
                     "linear-gradient(to right, #10b981, #f59e0b, #ef4444)",
                 }}
@@ -573,11 +582,13 @@ export default function QuantumThreat({ footer }: QuantumThreatProps) {
             </li>
             <li>
               <span className="text-accent-primary">&bull;</span> NIST
-              PQC-Standards: CRYSTALS-Dilithium, SPHINCS+
+              PQC-Standards (2024): ML-DSA (FIPS 204, ex-Dilithium), SLH-DSA
+              (FIPS 205, ex-SPHINCS+)
             </li>
             <li>
-              <span className="text-accent-primary">&bull;</span> Bitcoin
-              Community diskutiert quantenresistente Upgrades
+              <span className="text-accent-primary">&bull;</span> Bitcoin: BIP-360
+              (Pay-to-Merkle-Root, Draft) entfernt den quantenanf&auml;lligen
+              Key-Path-Spend aus Taproot
             </li>
           </ul>
         </div>

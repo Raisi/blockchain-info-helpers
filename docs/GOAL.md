@@ -134,10 +134,11 @@ in one session, and a Bitcoin developer would sign off on the accuracy.
 - Flash on first page navigation (GSAP entrance race). Tracked in `ToDos.md`.
 - `pnpm lint` is error-free but reports ~23 warnings (unused vars, exhaustive-deps). CI fails
   on lint errors only.
-- Time-sensitive content to re-verify periodically: quantum-computer status card in
-  `elliptic-curves/components/QuantumThreat.tsx`, real-world difficulty comparison in
-  `mining/components/DifficultyTarget.tsx`, coinbase reward in `mining/components/BlockAnatomy.tsx`
-  (3.125 BTC until the ~2028 halving).
+- Time-sensitive content, last verified September 2026 (re-check yearly): quantum-computer
+  status card in `elliptic-curves/components/QuantumThreat.tsx` (qubit counts, Google/IonQ
+  resource estimates, BIP-360 status), real-world difficulty in
+  `mining/components/DifficultyTarget.tsx` (~127 T), coinbase reward in
+  `mining/components/BlockAnatomy.tsx` (3.125 BTC until the ~2028 halving).
 
 ---
 
