@@ -1,7 +1,26 @@
+import { secp256k1 } from "@noble/curves/secp256k1";
 import type { MasterKey } from "./types";
 
 /** Cast Uint8Array to BufferSource for Web Crypto API (TS 5.7+ compat) */
 const asBuf = (u: Uint8Array): BufferSource => u as unknown as BufferSource;
+
+const bytesToBigInt = (b: Uint8Array): bigint =>
+  b.reduce((acc, x) => (acc << 8n) | BigInt(x), 0n);
+
+const bigIntToBytes32 = (n: bigint): Uint8Array => {
+  const out = new Uint8Array(32);
+  for (let i = 31; i >= 0; i--) {
+    out[i] = Number(n & 0xffn);
+    n >>= 8n;
+  }
+  return out;
+};
+
+/** BIP-32 CKDpriv step: child key = (IL + parent key) mod n */
+function addPrivateKeysModN(il: Uint8Array, parent: Uint8Array): Uint8Array {
+  const n = secp256k1.CURVE.n;
+  return bigIntToBytes32((bytesToBigInt(il) + bytesToBigInt(parent)) % n);
+}
 
 export const toHex = (b: Uint8Array): string =>
   Array.from(b)
@@ -51,6 +70,12 @@ export async function seedToMaster(seed: Uint8Array): Promise<MasterKey> {
   return { priv: I.slice(0, 32), chain: I.slice(32) };
 }
 
+/**
+ * BIP-32 private child derivation (CKDpriv).
+ * Hardened:     I = HMAC-SHA512(chain, 0x00 || k_par || i)
+ * Non-hardened: I = HMAC-SHA512(chain, ser_P(K_par) || i)
+ * k_child = (I_L + k_par) mod n, c_child = I_R
+ */
 export async function childDerive(
   priv: Uint8Array,
   chain: Uint8Array,
@@ -59,8 +84,12 @@ export async function childDerive(
 ): Promise<MasterKey> {
   const data = new Uint8Array(37);
   const i = hardened ? (idx | 0x80000000) >>> 0 : idx;
-  data[0] = 0x00;
-  data.set(priv, 1);
+  if (hardened) {
+    data[0] = 0x00;
+    data.set(priv, 1);
+  } else {
+    data.set(secp256k1.getPublicKey(priv, true), 0);
+  }
   new DataView(data.buffer).setUint32(33, i, false);
   const key = await crypto.subtle.importKey(
     "raw",
@@ -70,7 +99,7 @@ export async function childDerive(
     ["sign"]
   );
   const I = new Uint8Array(await crypto.subtle.sign("HMAC", key, asBuf(data)));
-  return { priv: I.slice(0, 32), chain: I.slice(32) };
+  return { priv: addPrivateKeysModN(I.slice(0, 32), priv), chain: I.slice(32) };
 }
 
 export async function bip85ExtractEntropy(
