@@ -184,6 +184,8 @@ export default function HashParticles({ stageRef, pausedRef }: Props) {
     pointsRef.current.visible = isSearching || isFound || anyAlive;
 
     const geom = pointsRef.current.geometry;
+    // First frame can run before the effect above attaches the attributes
+    if (!geom.attributes.position) return;
     geom.attributes.position.needsUpdate = true;
     geom.attributes.color.needsUpdate = true;
     geom.attributes.size.needsUpdate = true;
