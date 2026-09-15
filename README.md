@@ -6,16 +6,23 @@ Interaktive Lern-Website zu Blockchain- und Bitcoin-Konzepten. Komplexe Themen w
 
 ## Themen
 
+Live (9 von 21 geplanten, Stand September 2026):
+
 - **Hashing (SHA-256)** — Wie aus beliebigen Daten ein eindeutiger Fingerprint entsteht
 - **Elliptische Kurven (secp256k1)** — Die Mathematik hinter Bitcoin-Schlüsseln
 - **BIP-39 Seed Phrases** — Wie aus Zufall merkbare Wörter werden
 - **Vom Seed zum Wallet (BIP-32/44)** — Hierarchische Key-Ableitung erklärt
 - **zpub (Extended Public Key)** — Öffentliche Schlüssel und Adress-Ableitung
+- **Bitcoin Adressen** — Base58Check & Bech32 Encoding-Lab
+- **BIP-85 Child Seeds** — Unabhängige Seeds aus einem Master-Seed
+- **Mining Simulator** — Nonce-Suche, Difficulty, Mining-Race und 3D-Prozess
 - **Blockchain-Struktur** — Blöcke, Verkettung und Proof-of-Work
+
+Roadmap und Status: [`docs/GOAL.md`](docs/GOAL.md)
 
 ## Tech Stack
 
-Next.js 16 · Tailwind CSS 4 · GSAP · TypeScript · pnpm
+Next.js 16 · React 19 · Tailwind CSS 4 · GSAP · Three.js (R3F) · @noble/\* · TypeScript · pnpm
 
 ## Lokale Entwicklung
 

@@ -35,7 +35,7 @@ CLAUDE_CODE_MAX_OUTPUT_TOKENS=64000 claude --resume c21f5fa5-5d74-4ae9-baaf-a5e6
 
 ### Keys & Wallets (`keys`)
 
-- [ ] **adressen** — Bitcoin Adressen
+- [x] **adressen** — Bitcoin Adressen
   - Base58 & Bech32 Encoding-Lab — wie Adressen aufgebaut sind
   - Icon: `address`
 

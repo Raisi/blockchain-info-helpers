@@ -2,103 +2,147 @@
 
 ## What This Is
 
-An interactive educational website that makes Bitcoin and blockchain concepts tangible through visual, hands-on demonstrations. The target audience is technically curious people — developers, students, or Bitcoin users — who want to understand *how* things work under the hood, not just that they work.
+An interactive educational website that makes Bitcoin and blockchain concepts tangible
+through visual, hands-on demonstrations. Target audience: technically curious people
+(developers, students, Bitcoin users) who want to understand _how_ things work under the
+hood. Language: German first, English a future consideration.
 
 ---
 
 ## Core Philosophy
 
-**"Show, don't tell."**
+**"Show, don't tell."** Every concept has a live, interactive component:
 
-Every concept has a live, interactive component:
-- SHA-256 hashing → type anything, watch the hash change in real time
-- BIP-39 seed phrases → see exactly how entropy becomes 24 words
-- Elliptic curve math → move a point on secp256k1 and watch the math
-- Mining → actually find a nonce and see proof-of-work happen
+- SHA-256 → type anything, watch the hash change in real time
+- BIP-39 → see exactly how entropy becomes 12 or 24 words
+- Elliptic curves → move a point on secp256k1 and watch the math
+- Mining → actually find a nonce and watch proof-of-work happen in 3D
 
-No static diagrams. No walls of text. Everything is explorable.
+Design principles:
+
+- **Learn by doing**: playground, not lecture
+- **Visually rich**: dark "Crypto Terminal" aesthetic, GSAP everywhere, nothing distracting
+- **Technically accurate**: real cryptography via `@noble/*`, BIPs as source of truth
+- **Progressive depth**: fundamentals → keys → transactions → network → advanced
+- **Honest about limits**: mark educational simplifications vs. real Bitcoin behaviour
 
 ---
 
 ## Content Roadmap
 
-Topics are organized into five categories. Status as of April 2026:
+Status as of **September 2026**: **9 of 21** registered topics live. The registry in
+`src/lib/constants.ts` is authoritative; update this table, `ToDos.md` and `README.md`
+in the same commit as a status change.
 
 ### Fundamentals
-| Slug | Title | Status |
-|------|-------|--------|
-| hashing | Was ist Hashing? | ✅ Live |
-| elliptic-curves | Elliptische Kurven | ✅ Live |
-| merkle-trees | Merkle Trees | Planned |
-| ecdsa | ECDSA Signaturen | Planned |
+
+| Slug            | Title              | Status                  |
+| --------------- | ------------------ | ----------------------- |
+| hashing         | Was ist Hashing?   | ✅ Live                 |
+| elliptic-curves | Elliptische Kurven | ✅ Live                 |
+| merkle-trees    | Merkle Trees       | Planned (high priority) |
+| ecdsa           | ECDSA Signaturen   | Planned (high priority) |
 
 ### Keys & Wallets
-| Slug | Title | Status |
-|------|-------|--------|
-| bip39 | Wie entsteht eine Seed Phrase? | ✅ Live |
-| bip-visualizer | Vom Seed zum Wallet (BIP-32/44) | ✅ Live |
-| zpub | Was ist ein zpub? | ✅ Live |
-| bip85 | BIP-85 Child Seeds | ✅ Live |
-| adressen | Bitcoin Adressen | Planned |
+
+| Slug           | Title                              | Status               |
+| -------------- | ---------------------------------- | -------------------- |
+| bip39          | Wie entsteht eine Seed Phrase?     | ✅ Live              |
+| bip-visualizer | Vom Seed zum Wallet (BIP-32/44)    | ✅ Live              |
+| zpub           | Was ist ein zpub?                  | ✅ Live              |
+| adressen       | Bitcoin Adressen (Base58 / Bech32) | ✅ Live (2026-04-15) |
+| bip85          | BIP-85 Child Seeds                 | ✅ Live              |
 
 ### Transactions
-| Slug | Title | Status |
-|------|-------|--------|
-| utxo | UTXO Explorer | Planned |
+
+| Slug       | Title             | Status  |
+| ---------- | ----------------- | ------- |
+| utxo       | UTXO Explorer     | Planned |
 | tx-builder | Transaktion bauen | Planned |
-| script | Bitcoin Script | Planned |
-| fees | Gebühren & vBytes | Planned |
+| script     | Bitcoin Script    | Planned |
+| fees       | Gebühren & vBytes | Planned |
 
 ### Network & Consensus
-| Slug | Title | Status |
-|------|-------|--------|
-| mining | Mining Simulator | ✅ Live |
-| propagation | Block-Propagierung | Planned |
-| difficulty | Difficulty Anpassung | Planned |
+
+| Slug                 | Title                             | Status  |
+| -------------------- | --------------------------------- | ------- |
+| mining               | Mining Simulator (incl. 3D)       | ✅ Live |
+| blockchain-structure | Wie funktioniert eine Blockchain? | ✅ Live |
+| propagation          | Block-Propagierung                | Planned |
+| difficulty           | Difficulty Anpassung              | Planned |
 
 ### Advanced
-| Slug | Title | Status |
-|------|-------|--------|
-| lightning | Lightning Network | Planned |
-| schnorr | Schnorr Signaturen | Planned |
-| taproot | Taproot | Planned |
-| timechain | Timechain (Halving/Supply) | Planned |
 
-Also under consideration: **Borderwallet** concept visualization.
+| Slug      | Title                        | Status  |
+| --------- | ---------------------------- | ------- |
+| lightning | Lightning Network            | Planned |
+| schnorr   | Schnorr Signaturen           | Planned |
+| taproot   | Taproot                      | Planned |
+| timechain | Timechain (Halving / Supply) | Planned |
 
----
+### Backlog / ideas
 
-## Design Intent
-
-**Aesthetic: "Crypto Terminal meets Editorial Design"**
-
-- Dark theme — this is a crypto tool, it lives at night
-- Cyan (`#22d3ee`) as the primary accent — electric, technical
-- Monospace fonts for crypto data and code; clean sans-serif for prose
-- GSAP animations throughout — nothing is static, but nothing is distracting
-- Feels like a polished product, not a demo project
+- Border Wallet concept visualization
+- Light theme / additional themes
+- More interactive features per existing topic
+- Cross-topic links (hashing → mining, keys → addresses → transactions); first ones exist
+  from bip-pipeline and zpub into adressen
 
 ---
 
-## Technical Constraints (Intentional)
+## Goals
 
-- **No backend** — runs entirely in the browser, deployable as static files
-- **No telemetry** — user data never leaves the browser
-- **Real cryptography** — uses `@noble/*` libraries (audited, production-grade), not toy implementations
-- **German-first UI** — content is in German (target audience is German-speaking)
+**Product**: complete the topic map; each topic standalone and self-explanatory; real
+cryptography; mobile-ready.
+
+**Quality**: build always green (type-check, lint, static export); fast static pages with
+heavy components lazy-loaded; accessible (semantic HTML, keyboard, ARIA); smooth GSAP with
+scoped cleanup.
+
+**Learning**: progressive complexity; visible cross-topic connections; educational
+simplifications clearly labelled.
+
+Success looks like: a newcomer can go from "what is hashing?" to "how does Lightning work?"
+in one session, and a Bitcoin developer would sign off on the accuracy.
+
+---
+
+## Technical Constraints (intentional)
+
+- No backend; static files only
+- No telemetry; nothing leaves the browser
+- Real cryptography via audited `@noble/*` libraries
+- German-first UI
 
 ---
 
 ## Open Decisions
 
-- **Hosting**: Currently GitHub Pages; Vercel being evaluated
-- **CMS**: Possibly MDX for longer explanatory text alongside visualizations
-- **Learning progress**: Local Storage vs. database (Prisma/SQLite)
-- **Internationalization**: German now; English later?
-- **Standalone artifacts**: Should original `generated_artifacts/` files remain accessible?
+| Decision             | Options                                | Status                   |
+| -------------------- | -------------------------------------- | ------------------------ |
+| Hosting              | GitHub Pages vs. Vercel                | GitHub Pages for now     |
+| Custom domain        | github.io subpath vs. own domain       | subpath for now          |
+| CMS for prose        | MDX vs. hardcoded in components        | undecided                |
+| Learning progress    | localStorage vs. Prisma/DB             | undecided, nothing built |
+| Internationalization | DE only vs. DE/EN                      | DE only for now          |
+| Original artifacts   | keep standalone accessible vs. archive | undecided                |
+
+---
+
+## Known Issues
+
+- Flash on first page navigation (GSAP entrance race). Tracked in `ToDos.md`.
+- `pnpm lint` reports 6 `react-hooks/set-state-in-effect` errors; CI runs only `pnpm build`
+  so the deploy stays green.
+- Time-sensitive content to re-verify periodically: quantum-computer status card in
+  `elliptic-curves/components/QuantumThreat.tsx`, real-world difficulty comparison in
+  `mining/components/DifficultyTarget.tsx`, coinbase reward in `mining/components/BlockAnatomy.tsx`
+  (3.125 BTC until the ~2028 halving).
 
 ---
 
 ## Source of Artifacts
 
-Many visualizations were initially created as standalone Claude artifacts (HTML, JSX, TSX) stored in `generated_artifacts/`. The project converts these into unified TypeScript components that follow the design system. The `generated_artifacts/` directory is read-only reference material.
+Several visualizations began as standalone Claude artifacts (HTML, JSX, Markdown) in
+`generated_artifacts/` (gitignored, read-only). Converted components keep the original
+logic and adopt the shared design system.
