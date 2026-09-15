@@ -215,8 +215,8 @@ Interaktionen) **unverändert** übernehmen, nur Styling und Struktur ans Design
 
 1. Vor jeder Arbeit: diese CLAUDE.md lesen, bei Bedarf `docs/ARCHITECTURE.md`.
 2. Ein Topic pro Durchgang.
-3. Nach jeder Änderung: `pnpm type-check`, `pnpm lint`, `pnpm build`. CI führt **nur**
-   `pnpm build` aus, Lint-Fehler fallen dort nicht auf.
+3. Nach jeder Änderung: `pnpm type-check`, `pnpm lint`, `pnpm build`. CI führt dieselbe
+   Sequenz aus; Lint-**Fehler** brechen den Deploy, Warnungen nicht.
 4. Design-System-Treue: nur definierte Tokens.
 5. Commits atomar im Format `feat(topic): …`, `fix(topic): …`, `style(ui): …`,
    `refactor(viz): …`, `docs: …`. Vor jedem Commit um Erlaubnis fragen.

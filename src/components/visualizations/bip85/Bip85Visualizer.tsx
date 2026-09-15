@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { BIP85_STEPS, DEFAULT_MNEMONIC, WORDLIST_URL } from "./constants";
 import WhyBip85 from "./components/WhyBip85";
@@ -80,27 +80,29 @@ export default function Bip85Visualizer() {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Compute master key and seed from mnemonic
-  const computeMaster = useCallback(async () => {
-    if (!mnemonic.trim()) {
-      setMasterKey(null);
-      setSeed(null);
-      return;
-    }
-    try {
-      const s = await mnemonicToSeed(mnemonic);
-      const mk = await seedToMaster(s);
-      setSeed(s);
-      setMasterKey(mk);
-    } catch {
-      setMasterKey(null);
-      setSeed(null);
-    }
-  }, [mnemonic]);
-
+  // Compute master key and seed from mnemonic (async; ignore results of superseded runs)
   useEffect(() => {
-    computeMaster();
-  }, [computeMaster]);
+    let cancelled = false;
+    const derive = mnemonic.trim()
+      ? mnemonicToSeed(mnemonic).then(async (s) => ({ seed: s, master: await seedToMaster(s) }))
+      : Promise.resolve(null);
+
+    derive
+      .then((r) => {
+        if (cancelled) return;
+        setSeed(r?.seed ?? null);
+        setMasterKey(r?.master ?? null);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setMasterKey(null);
+        setSeed(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [mnemonic]);
 
   // Load wordlist
   useEffect(() => {

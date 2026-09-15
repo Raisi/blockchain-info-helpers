@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { gsap } from "@/lib/gsap";
 import {
@@ -15,48 +15,40 @@ import { Step2Hash160 } from "./components/Step2Hash160";
 import { Step3Encoding } from "./components/Step3Encoding";
 import { Step4Addresses } from "./components/Step4Addresses";
 
+/** Pubkey from the URL (`?pubkey=`) if valid, otherwise a random one. Evaluated once on mount. */
+function resolveInitialPubkey(fromUrl: string | null): string {
+  return fromUrl && isValidPubkey(fromUrl) ? fromUrl : generateRandomPubkey();
+}
+
 export function AdressenVisualizer() {
   const searchParams = useSearchParams();
-  const initialPubkey = searchParams.get("pubkey") ?? undefined;
-  const [pubkeyHex, setPubkeyHex] = useState<string>("");
-  const [pubkeyInput, setPubkeyInput] = useState<string>("");
-  const [pubkeyValid, setPubkeyValid] = useState<boolean>(false);
-  const [sha256Result, setSha256Result] = useState<Uint8Array | null>(null);
-  const [hash160, setHash160] = useState<Uint8Array | null>(null);
-  const [p2pkhAddress, setP2pkhAddress] = useState<string>("");
-  const [p2wpkhAddress, setP2wpkhAddress] = useState<string>("");
-  const [p2pkhChecksum, setP2pkhChecksum] = useState<Uint8Array | null>(null);
+  const [pubkeyHex, setPubkeyHex] = useState<string>(() =>
+    resolveInitialPubkey(searchParams.get("pubkey")),
+  );
+  const [pubkeyInput, setPubkeyInput] = useState<string>(pubkeyHex);
+  const [pubkeyValid, setPubkeyValid] = useState<boolean>(true);
   const [activeStep, setActiveStep] = useState<Step>(1);
   const [completedSteps, setCompletedSteps] = useState<Set<Step>>(new Set());
 
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Initialise on mount
-  useEffect(() => {
-    const initial =
-      initialPubkey && isValidPubkey(initialPubkey)
-        ? initialPubkey
-        : generateRandomPubkey();
-    setPubkeyInput(initial);
-    setPubkeyHex(initial);
-    setPubkeyValid(true);
-  }, [initialPubkey]);
-
-  // Crypto pipeline whenever valid pubkey changes
-  useEffect(() => {
-    if (!pubkeyValid || !pubkeyHex) return;
+  // Crypto pipeline: derived from the current valid pubkey
+  const derived = useMemo(() => {
+    if (!pubkeyValid || !pubkeyHex) return null;
     try {
-      const result = computeAddresses(pubkeyHex);
-      setSha256Result(result.sha256Result);
-      setHash160(result.hash160);
-      setP2pkhChecksum(result.p2pkhChecksum);
-      setP2pkhAddress(result.p2pkhAddress);
-      setP2wpkhAddress(result.p2wpkhAddress);
+      return computeAddresses(pubkeyHex);
     } catch (e) {
       console.error("Address computation error:", e);
+      return null;
     }
   }, [pubkeyHex, pubkeyValid]);
+
+  const sha256Result = derived?.sha256Result ?? null;
+  const hash160 = derived?.hash160 ?? null;
+  const p2pkhChecksum = derived?.p2pkhChecksum ?? null;
+  const p2pkhAddress = derived?.p2pkhAddress ?? "";
+  const p2wpkhAddress = derived?.p2wpkhAddress ?? "";
 
   // Hero entrance animation on mount
   useEffect(() => {

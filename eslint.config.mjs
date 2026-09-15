@@ -16,6 +16,9 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Read-only reference artifacts
     "generated_artifacts/**",
+    // Local tooling scratch (Claude Code plugins)
+    ".remember/**",
+    ".playwright-mcp/**",
   ]),
 ]);
 

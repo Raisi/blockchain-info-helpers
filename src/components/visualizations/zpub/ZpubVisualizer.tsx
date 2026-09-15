@@ -22,8 +22,12 @@ export default function ZpubVisualizer() {
   const [currentStep, setCurrentStep] = useState(1);
   const [mnemonic, setMnemonic] = useState(DEFAULT_MNEMONIC);
   const [passphrase, setPassphrase] = useState("");
-  const [computing, setComputing] = useState(false);
+  // Key of the mnemonic/passphrase pair the current results belong to; "computing" is derived
+  const [computedFor, setComputedFor] = useState<string | null>(null);
   const [completedSteps, setCompletedSteps] = useState(0);
+  const derivationKey = `${mnemonic}|${passphrase}`;
+  const hasEnoughWords = mnemonic.trim().split(/\s+/).filter(Boolean).length >= 12;
+  const computing = hasEnoughWords && computedFor !== derivationKey;
 
   // Derivation results
   const [accountPrivKey, setAccountPrivKey] = useState<Uint8Array | null>(null);
@@ -35,24 +39,29 @@ export default function ZpubVisualizer() {
 
   // Run full derivation on mnemonic/passphrase change (background)
   useEffect(() => {
-    const words = mnemonic.trim().split(/\s+/).filter(Boolean);
-    if (words.length < 12) return;
+    if (!hasEnoughWords) return;
+    let cancelled = false;
 
-    setComputing(true);
     fullZpubDerivation(mnemonic, passphrase)
       .then((result) => {
+        if (cancelled) return;
         setAccountPrivKey(result.derivationLevels[2].privKey);
         setAccountPubKey(result.accountPubKey);
         setAccountChainCode(result.accountChainCode);
         setSerialized(result.serialized);
         setCompletedSteps(5);
-        setComputing(false);
+        setComputedFor(derivationKey);
       })
       .catch((e) => {
+        if (cancelled) return;
         console.error("zpub derivation error:", e);
-        setComputing(false);
+        setComputedFor(derivationKey);
       });
-  }, [mnemonic, passphrase]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [mnemonic, passphrase, hasEnoughWords, derivationKey]);
 
   // Step entrance animation
   useEffect(() => {

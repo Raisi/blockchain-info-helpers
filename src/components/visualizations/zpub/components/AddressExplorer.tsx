@@ -18,26 +18,34 @@ export function AddressExplorer({
 }: AddressExplorerProps) {
   const [tab, setTab] = useState<"receive" | "change">("receive");
   const [maxIndex, setMaxIndex] = useState(5);
-  const [addresses, setAddresses] = useState<DerivedAddress[]>([]);
+  // Results tagged with the inputs they were derived from; "computing" is derived from a key mismatch
+  const [result, setResult] = useState<{ key: string; addresses: DerivedAddress[] }>({
+    key: "",
+    addresses: [],
+  });
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [computing, setComputing] = useState(false);
   const pipelineRef = useRef<HTMLDivElement>(null);
   const hasAnimated = useRef(false);
 
+  const requestKey = `${tab}|${maxIndex}|${toHex(accountPubKey)}|${toHex(accountChainCode)}`;
+  const addresses = result.addresses;
+  const computing = result.key !== requestKey;
+
   useEffect(() => {
-    setComputing(true);
+    let cancelled = false;
     const isChange = tab === "change";
     const promises = Array.from({ length: maxIndex }, (_, i) =>
       deriveAddressFromZpub(accountPubKey, accountChainCode, isChange, i)
     );
     Promise.all(promises).then((results) => {
-      setAddresses(results);
-      setComputing(false);
-      if (selectedIndex >= results.length) {
-        setSelectedIndex(0);
-      }
+      if (cancelled) return;
+      setResult({ key: requestKey, addresses: results });
+      setSelectedIndex((i) => (i >= results.length ? 0 : i));
     });
-  }, [accountPubKey, accountChainCode, tab, maxIndex]);
+    return () => {
+      cancelled = true;
+    };
+  }, [accountPubKey, accountChainCode, tab, maxIndex, requestKey]);
 
   // Entrance animation — once when pipeline first appears
   useEffect(() => {

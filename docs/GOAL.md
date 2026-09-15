@@ -132,8 +132,8 @@ in one session, and a Bitcoin developer would sign off on the accuracy.
 ## Known Issues
 
 - Flash on first page navigation (GSAP entrance race). Tracked in `ToDos.md`.
-- `pnpm lint` reports 6 `react-hooks/set-state-in-effect` errors; CI runs only `pnpm build`
-  so the deploy stays green.
+- `pnpm lint` is error-free but reports ~23 warnings (unused vars, exhaustive-deps). CI fails
+  on lint errors only.
 - Time-sensitive content to re-verify periodically: quantum-computer status card in
   `elliptic-curves/components/QuantumThreat.tsx`, real-world difficulty comparison in
   `mining/components/DifficultyTarget.tsx`, coinbase reward in `mining/components/BlockAnatomy.tsx`

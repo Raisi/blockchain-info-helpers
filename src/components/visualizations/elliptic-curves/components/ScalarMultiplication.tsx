@@ -54,12 +54,6 @@ export default function ScalarMultiplication({
     };
   }, [isPlaying, isStepMode, steps.length]);
 
-  // Reset step when scalar changes
-  useEffect(() => {
-    setCurrentStep(0);
-    setIsPlaying(false);
-  }, [scalar]);
-
   const togglePlay = useCallback(() => {
     if (currentStep >= steps.length - 1) {
       setCurrentStep(0);
@@ -186,6 +180,9 @@ export default function ScalarMultiplication({
             onChange={(e) => {
               const n = Number(e.target.value);
               setScalar(n);
+              // Reset step playback whenever the scalar changes
+              setCurrentStep(0);
+              setIsPlaying(false);
               setHasMovedSlider(true);
               onScalarChange(n);
             }}
