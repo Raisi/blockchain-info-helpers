@@ -60,7 +60,7 @@ export function computeAddresses(pubkeyHex: string): ComputedAddresses {
 if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
   try {
     const TV_PUBKEY = "0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798";
-    const TV_P2PKH = "1BpEi6DfDAUFd153wiGrvkiKW1ECQ8xCXe";
+    const TV_P2PKH = "1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH"; // P2PKH of compressed generator point G
     const TV_P2WPKH = "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4";
     const result = computeAddresses(TV_PUBKEY);
     console.assert(result.p2pkhAddress === TV_P2PKH,
