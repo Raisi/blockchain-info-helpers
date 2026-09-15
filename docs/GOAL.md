@@ -134,7 +134,7 @@ in one session, and a Bitcoin developer would sign off on the accuracy.
 - Flash on first page navigation (GSAP entrance race). Tracked in `ToDos.md`.
 - Test coverage exists only for `crypto-utils.ts` modules (Vitest, BIP test vectors). No
   component or visual tests.
-- `pnpm lint` is error-free but reports ~23 warnings (unused vars, exhaustive-deps). CI fails
+- `pnpm lint` is error-free but reports ~22 warnings (unused vars, exhaustive-deps). CI fails
   on lint errors only.
 - Time-sensitive content, last verified September 2026 (re-check yearly): quantum-computer
   status card in `elliptic-curves/components/QuantumThreat.tsx` (qubit counts, Google/IonQ

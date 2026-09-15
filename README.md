@@ -22,7 +22,15 @@ Roadmap und Status: [`docs/GOAL.md`](docs/GOAL.md)
 
 ## Tech Stack
 
-Next.js 16 · React 19 · Tailwind CSS 4 · GSAP · Three.js (R3F) · @noble/\* · TypeScript · pnpm
+Next.js 16 · React 19 · Tailwind CSS 4 · GSAP · Three.js (R3F) · @noble/\* 2.x · TypeScript · Vitest · pnpm
+
+## Prüfen
+
+```bash
+pnpm type-check && pnpm lint && pnpm test && pnpm build
+```
+
+Die Krypto-Module werden gegen BIP-Testvektoren getestet (BIP-39, BIP-84, BIP-85, BIP-173).
 
 ## Lokale Entwicklung
 
