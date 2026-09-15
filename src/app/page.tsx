@@ -1,10 +1,71 @@
 "use client";
 
 import { useRef, useEffect } from "react";
+import Link from "next/link";
 import { gsap } from "@/lib/gsap";
 import { TOPICS, CATEGORY_LABELS, CATEGORY_ORDER } from "@/lib/constants";
-import { Card } from "@/components/ui";
 import { PageShell } from "@/components/layout";
+import { cn } from "@/lib/utils";
+import type { Topic } from "@/types";
+
+function TopicRow({ topic, index }: { topic: Topic; index: number }) {
+  const available = topic.available === true;
+  const number = String(index).padStart(2, "0");
+
+  const content = (
+    <>
+      <span className="font-code text-xs text-text-muted lg:pt-2">{number}</span>
+      <span
+        className={cn(
+          "font-display text-xl font-medium leading-tight tracking-tight text-pretty sm:text-2xl",
+          available ? "text-text-primary" : "text-text-muted"
+        )}
+      >
+        {topic.title}
+      </span>
+      <span
+        className={cn(
+          "col-start-2 text-sm font-light leading-relaxed text-pretty lg:col-start-auto lg:pt-1.5",
+          available ? "text-text-secondary" : "text-text-muted/70"
+        )}
+      >
+        {topic.description}
+      </span>
+      <span
+        className={cn(
+          "col-start-2 font-code text-[11px] uppercase tracking-[0.12em] lg:col-start-auto lg:pt-2 lg:text-right",
+          available ? "text-accent-primary" : "text-text-muted/70"
+        )}
+      >
+        {available ? "Öffnen" : "Bald"}
+      </span>
+    </>
+  );
+
+  const rowClass =
+    "grid grid-cols-[3rem_minmax(0,1fr)] gap-x-4 gap-y-1.5 border-t border-border-subtle py-5 lg:grid-cols-[4rem_minmax(0,1fr)_22.5rem_5rem] lg:gap-x-8 lg:gap-y-0 lg:py-6";
+
+  if (!available) {
+    return (
+      <div className={rowClass} data-animate>
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      href={`/${topic.slug}`}
+      className={cn(
+        rowClass,
+        "group transition-colors hover:border-accent-primary/40"
+      )}
+      data-animate
+    >
+      {content}
+    </Link>
+  );
+}
 
 export default function Home() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -20,11 +81,11 @@ export default function Home() {
         ease: "power3.out",
       });
       gsap.from("[data-animate]", {
-        y: 20,
+        y: 16,
         opacity: 0,
         duration: 0.6,
-        stagger: 0.08,
-        delay: 0.5,
+        stagger: 0.04,
+        delay: 0.4,
         ease: "power3.out",
       });
     }, heroRef);
@@ -34,104 +95,76 @@ export default function Home() {
   const availableCount = TOPICS.filter((t) => t.available).length;
   const totalCount = TOPICS.length;
 
+  const sections = CATEGORY_ORDER.map((category) => ({
+    category,
+    topics: TOPICS.filter((t) => t.category === category).sort(
+      (a, b) => a.order - b.order
+    ),
+  })).filter((s) => s.topics.length > 0);
+  const offsets = sections.map((_, i) =>
+    sections.slice(0, i).reduce((sum, s) => sum + s.topics.length, 0)
+  );
+
   return (
     <PageShell>
       <div ref={heroRef}>
-        {/* Hero — left-aligned */}
-        <section className="pb-20 pt-12 sm:pt-20">
-          <div data-hero-animate className="mb-5 flex items-center gap-3">
-            <span className="h-px w-6 bg-accent-primary" />
-            <span className="font-code text-xs uppercase tracking-[0.15em] text-accent-primary">
-              Open Source · Interaktiv
-            </span>
-          </div>
-
+        {/* Hero */}
+        <section className="grid gap-10 pb-24 pt-12 sm:pt-20 lg:grid-cols-[minmax(0,1fr)_26rem] lg:items-end lg:gap-20 lg:pb-32">
           <h1
             data-hero-animate
-            className="mb-5 font-display text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl"
+            className="font-display text-5xl font-bold leading-[0.95] tracking-[-0.04em] sm:text-7xl lg:text-8xl"
           >
-            Blockchain
+            Bitcoin
             <br />
-            <span className="text-accent-primary">Visualizer</span>
+            verstehen,
+            <br />
+            <span className="text-accent-primary">Schritt für Schritt.</span>
           </h1>
-
-          <p
-            data-hero-animate
-            className="mb-10 max-w-lg text-base leading-relaxed text-text-secondary sm:text-lg"
-          >
-            Verstehe die Technologie hinter Bitcoin — von Hashing bis zur
-            Schlüsselableitung — durch interaktive Schritt-für-Schritt-Visualisierungen.
-          </p>
-
-          <div
-            data-hero-animate
-            className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-text-muted"
-          >
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-display text-2xl font-bold tabular-nums text-text-primary">
-                {availableCount}
-              </span>
-              <span>verfügbar</span>
-            </div>
-            <div className="hidden h-3 w-px bg-border-subtle sm:block" />
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-display text-2xl font-bold tabular-nums text-text-primary">
-                {totalCount}
-              </span>
-              <span>geplant</span>
-            </div>
-            <div className="hidden h-3 w-px bg-border-subtle sm:block" />
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-success opacity-75" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent-success" />
-              </span>
-              <span>Läuft vollständig lokal</span>
-            </div>
+          <div data-hero-animate className="flex flex-col gap-5">
+            <p className="text-lg font-light leading-relaxed text-text-secondary text-pretty">
+              {totalCount} interaktive Visualisierungen mit echter Kryptografie im
+              Browser — {availableCount} davon heute verfügbar.
+            </p>
+            <p className="font-code text-xs uppercase tracking-[0.15em] text-accent-primary">
+              Open Source · Läuft lokal
+            </p>
           </div>
         </section>
 
         {/* Topics */}
-        {CATEGORY_ORDER.map((category) => {
-          const topicsInCategory = TOPICS.filter(
-            (t) => t.category === category
-          ).sort((a, b) => a.order - b.order);
+        <div className="flex flex-col gap-20 pb-16 lg:gap-28">
+          {sections.map(({ category, topics }, sectionIndex) => {
+            const label = CATEGORY_LABELS[category];
 
-          if (topicsInCategory.length === 0) return null;
-
-          const label = CATEGORY_LABELS[category];
-
-          return (
-            <section key={category} className="mb-14">
-              <div className="mb-6" data-animate>
-                {label?.subtitle && (
-                  <p className="mb-1 font-code text-[10px] uppercase tracking-[0.15em] text-accent-primary/70">
-                    {label.subtitle}
-                  </p>
-                )}
-                <div className="flex items-center gap-4">
-                  <h2 className="font-display text-2xl font-bold text-text-primary">
+            return (
+              <section key={category} className="flex flex-col gap-6">
+                <div
+                  className="flex flex-wrap items-baseline gap-x-5 gap-y-1"
+                  data-animate
+                >
+                  <h2 className="font-display text-sm font-bold uppercase tracking-[0.06em] text-text-primary">
                     {label?.title ?? category}
                   </h2>
-                  <div className="h-px flex-1 bg-border-subtle" />
+                  {label?.subtitle && (
+                    <p className="font-code text-xs text-text-muted">
+                      {label.subtitle}
+                    </p>
+                  )}
                 </div>
-              </div>
 
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {topicsInCategory.map((topic) => (
-                  <Card
-                    key={topic.slug}
-                    title={topic.title}
-                    description={topic.description}
-                    icon={topic.icon}
-                    href={`/${topic.slug}`}
-                    available={topic.available === true}
-                  />
-                ))}
-              </div>
-            </section>
-          );
-        })}
+                <div className="flex flex-col">
+                  {topics.map((topic, i) => (
+                    <TopicRow
+                      key={topic.slug}
+                      topic={topic}
+                      index={offsets[sectionIndex] + i + 1}
+                    />
+                  ))}
+                </div>
+              </section>
+            );
+          })}
+        </div>
       </div>
     </PageShell>
   );

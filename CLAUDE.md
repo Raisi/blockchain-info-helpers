@@ -47,7 +47,7 @@ Kein Prisma, keine DB, keine API-Routen. Erst einbauen, wenn eine offene Entsche
 ├── src/
 │   ├── app/
 │   │   ├── layout.tsx               ← Fonts (next/font/google), Nav, Footer
-│   │   ├── page.tsx                 ← Hub: Topic-Cards nach Kategorie
+│   │   ├── page.tsx                 ← Hub: nummerierte Topic-Liste nach Kategorie
 │   │   ├── globals.css              ← CSS Custom Properties + @theme inline + Keyframes
 │   │   └── <slug>/page.tsx          ← EIN statischer Ordner pro Topic (kein [topic]-Dynamic-Route)
 │   ├── components/
