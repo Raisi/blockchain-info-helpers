@@ -21,7 +21,8 @@ Source of truth for versions is `package.json`; for topics it is `src/lib/consta
 | Animation     | GSAP 3 + ScrollTrigger                                | wrapper in `src/lib/gsap.ts`                     |
 | 3D            | Three.js, @react-three/fiber, @react-three/drei       | mining topic only, dynamic import                |
 | Cryptography  | @noble/curves, @noble/hashes, @scure/base, Web Crypto | client-side only                                 |
-| Lint / Format | ESLint 9 flat config, Prettier                        | CI runs type-check + lint before build           |
+| Lint / Format | ESLint 9 flat config, Prettier                        | CI runs type-check + lint + test before build    |
+| Tests         | Vitest 5, node environment                            | `crypto-utils.test.ts` per topic, BIP vectors    |
 | Tooling       | pnpm 10, Node 24                                      | `.nvmrc`, `packageManager` field                 |
 | Deployment    | GitHub Actions → GitHub Pages                         | `.github/workflows/deploy.yml`                   |
 
@@ -172,11 +173,12 @@ SVG geometry).
 pnpm dev          # Turbopack dev server
 pnpm build        # static export → out/
 pnpm lint         # ESLint (errors fail CI, warnings do not)
+pnpm test         # Vitest, node environment: <topic>/crypto-utils.test.ts against BIP vectors
 pnpm type-check   # tsc --noEmit
 ```
 
 `deploy.yml`: on push to `main` → checkout → pnpm/action-setup → setup-node 24 →
-`pnpm install --frozen-lockfile` → `pnpm type-check` → `pnpm lint` → `pnpm build` → upload
+`pnpm install --frozen-lockfile` → `pnpm type-check` → `pnpm lint` → `pnpm test` → `pnpm build` → upload
 `out/` → deploy-pages.
 `public/.nojekyll` keeps `_next/` assets servable. `basePath` is
 `/blockchain-info-helpers` in production, empty in dev. `trailingSlash: true` emits

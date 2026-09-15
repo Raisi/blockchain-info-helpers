@@ -23,6 +23,7 @@ und wurden in einheitliche TypeScript-Komponenten überführt.
 | Kryptografie    | @noble/curves, @noble/hashes, @scure/base, Web Crypto API                         |
 | Sprache         | TypeScript (strict)                                                               |
 | Linting         | ESLint 9 (flat config) + Prettier                                                 |
+| Tests           | Vitest 5 (`*/crypto-utils.test.ts`, BIP-Testvektoren)                             |
 | Package Manager | pnpm 10, Node 24 (`.nvmrc`)                                                       |
 | Deployment      | GitHub Actions → GitHub Pages (`out/`)                                            |
 
@@ -215,8 +216,10 @@ Interaktionen) **unverändert** übernehmen, nur Styling und Struktur ans Design
 
 1. Vor jeder Arbeit: diese CLAUDE.md lesen, bei Bedarf `docs/ARCHITECTURE.md`.
 2. Ein Topic pro Durchgang.
-3. Nach jeder Änderung: `pnpm type-check`, `pnpm lint`, `pnpm build`. CI führt dieselbe
-   Sequenz aus; Lint-**Fehler** brechen den Deploy, Warnungen nicht.
+3. Nach jeder Änderung: `pnpm type-check`, `pnpm lint`, `pnpm test`, `pnpm build`. CI führt
+   dieselbe Sequenz aus; Lint-**Fehler** und Test-Fehler brechen den Deploy, Warnungen nicht.
+   Jede `crypto-utils.ts` hat eine `crypto-utils.test.ts` daneben mit BIP-Testvektoren als
+   Source of Truth; neue Krypto-Funktionen bekommen einen Vektor-Test.
 4. Design-System-Treue: nur definierte Tokens.
 5. Commits atomar im Format `feat(topic): …`, `fix(topic): …`, `style(ui): …`,
    `refactor(viz): …`, `docs: …`. Vor jedem Commit um Erlaubnis fragen.
@@ -232,6 +235,8 @@ pnpm dev          # Entwicklungsserver (Turbopack)
 pnpm build        # Statischer Export nach out/
 pnpm lint         # ESLint
 pnpm type-check   # tsc --noEmit
+pnpm test         # Vitest: crypto-utils gegen BIP-Testvektoren
+pnpm test:watch   # Vitest im Watch-Modus
 pnpm outdated     # Dependency-Stand
 pnpm audit        # Advisories (Server-seitige Next-CVEs betreffen den Static Export nicht)
 ```
