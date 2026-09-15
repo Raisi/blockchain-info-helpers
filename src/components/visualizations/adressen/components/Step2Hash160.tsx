@@ -1,4 +1,4 @@
-import { bytesToHex } from "@noble/hashes/utils";
+import { bytesToHex } from "@noble/hashes/utils.js";
 import { MonoRow } from "./MonoRow";
 
 interface Step2Hash160Props {

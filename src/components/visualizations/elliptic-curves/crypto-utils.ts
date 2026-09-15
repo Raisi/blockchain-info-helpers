@@ -1,10 +1,10 @@
-import { secp256k1 } from "@noble/curves/secp256k1";
+import { secp256k1 } from "@noble/curves/secp256k1.js";
 
 /**
  * Generates a random 32-byte private key.
  */
 export function generatePrivateKey(): Uint8Array {
-  return secp256k1.utils.randomPrivateKey();
+  return secp256k1.utils.randomSecretKey();
 }
 
 /**
@@ -17,7 +17,7 @@ export function getPublicKey(privKey: Uint8Array): {
   y: string;
 } {
   const compressed = secp256k1.getPublicKey(privKey, true);
-  const point = secp256k1.ProjectivePoint.fromPrivateKey(privKey).toAffine();
+  const point = secp256k1.Point.BASE.multiply(secp256k1.Point.Fn.fromBytes(privKey)).toAffine();
   return {
     compressed,
     x: point.x.toString(16).padStart(64, "0"),

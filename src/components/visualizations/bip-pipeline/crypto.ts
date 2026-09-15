@@ -1,4 +1,4 @@
-import { secp256k1 } from "@noble/curves/secp256k1";
+import { secp256k1 } from "@noble/curves/secp256k1.js";
 import type { MasterKey } from "./types";
 
 /** Cast Uint8Array to BufferSource for Web Crypto API (TS 5.7+ compat) */
@@ -18,7 +18,7 @@ const bigIntToBytes32 = (n: bigint): Uint8Array => {
 
 /** BIP-32 CKDpriv step: child key = (IL + parent key) mod n */
 function addPrivateKeysModN(il: Uint8Array, parent: Uint8Array): Uint8Array {
-  const n = secp256k1.CURVE.n;
+  const n = secp256k1.Point.Fn.ORDER;
   return bigIntToBytes32((bytesToBigInt(il) + bytesToBigInt(parent)) % n);
 }
 

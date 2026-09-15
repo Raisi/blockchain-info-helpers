@@ -93,12 +93,15 @@ dimmed "Bald verfügbar" cards and non-clickable Nav rows. Icons come from
 
 ### Cryptography
 
-| Library / API                | Used for                                |
-| ---------------------------- | --------------------------------------- |
-| Web Crypto (`crypto.subtle`) | SHA-256, PBKDF2, HMAC-SHA512 (async)    |
-| `@noble/hashes`              | sha256, ripemd160, utils (sync)         |
-| `@noble/curves/secp256k1`    | point arithmetic, public-key derivation |
-| `@scure/base`                | Base58Check, Bech32                     |
+| Library / API                | Used for                                                                                   |
+| ---------------------------- | ------------------------------------------------------------------------------------------ |
+| Web Crypto (`crypto.subtle`) | SHA-256, PBKDF2, HMAC-SHA512 (async)                                                       |
+| `@noble/hashes` 2.x          | `sha2.js` (sha256), `legacy.js` (ripemd160), `utils.js`                                    |
+| `@noble/curves` 2.x          | `secp256k1.js`: `getPublicKey`, `Point.BASE.multiply`, `Point.fromBytes`, `Point.Fn.ORDER` |
+| `@scure/base` 2.x            | Base58Check, Bech32                                                                        |
+
+noble 2.x is ESM-only and needs the `.js` subpath in every import. Point API: `Point`
+(not `ProjectivePoint`), `toBytes`, `fromBytes`, `utils.randomSecretKey`.
 
 Everything runs under `"use client"`. No keys ever leave the browser. Footer warns that
 generated keys must not be used for real wallets.

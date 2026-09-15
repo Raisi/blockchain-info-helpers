@@ -1,6 +1,6 @@
-import { secp256k1 } from "@noble/curves/secp256k1";
-import { ripemd160 } from "@noble/hashes/ripemd160";
-import { sha256 } from "@noble/hashes/sha256";
+import { secp256k1 } from "@noble/curves/secp256k1.js";
+import { ripemd160 } from "@noble/hashes/legacy.js";
+import { sha256 } from "@noble/hashes/sha2.js";
 import { base58 } from "@scure/base";
 import { bech32 } from "@scure/base";
 import type {
@@ -83,7 +83,7 @@ export async function hardenedChildDerive(
 
 /** Add two 32-byte private keys mod secp256k1 order n */
 function addPrivateKeys(a: Uint8Array, b: Uint8Array): Uint8Array {
-  const n = secp256k1.CURVE.n;
+  const n = secp256k1.Point.Fn.ORDER;
   const aBig = bytesToBigInt(a);
   const bBig = bytesToBigInt(b);
   const sum = (aBig + bBig) % n;
@@ -347,10 +347,10 @@ export async function childDerivePublic(
   const IR = I.slice(32);
 
   // Child public key = point(IL) + parentPubKey
-  const ilPoint = secp256k1.ProjectivePoint.fromPrivateKey(IL);
-  const parentPoint = secp256k1.ProjectivePoint.fromHex(parentPubKey);
+  const ilPoint = secp256k1.Point.BASE.multiply(secp256k1.Point.Fn.fromBytes(IL));
+  const parentPoint = secp256k1.Point.fromBytes(parentPubKey);
   const childPoint = ilPoint.add(parentPoint);
-  const childPubKey = childPoint.toRawBytes(true); // compressed
+  const childPubKey = childPoint.toBytes(true); // compressed
 
   return {
     parentPubKey,

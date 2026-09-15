@@ -1,7 +1,7 @@
-import { sha256 } from "@noble/hashes/sha256";
-import { ripemd160 } from "@noble/hashes/ripemd160";
-import { bytesToHex, hexToBytes } from "@noble/hashes/utils";
-import { secp256k1 } from "@noble/curves/secp256k1";
+import { sha256 } from "@noble/hashes/sha2.js";
+import { ripemd160 } from "@noble/hashes/legacy.js";
+import { bytesToHex, hexToBytes } from "@noble/hashes/utils.js";
+import { secp256k1 } from "@noble/curves/secp256k1.js";
 import { base58, bech32 } from "@scure/base";
 
 export type Step = 1 | 2 | 3 | 4;
@@ -21,7 +21,7 @@ export function isValidPubkey(hex: string): boolean {
 }
 
 export function generateRandomPubkey(): string {
-  const privKey = secp256k1.utils.randomPrivateKey();
+  const privKey = secp256k1.utils.randomSecretKey();
   const pubKeyBytes = secp256k1.getPublicKey(privKey, true);
   return bytesToHex(pubKeyBytes);
 }

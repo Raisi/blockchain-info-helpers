@@ -1,4 +1,4 @@
-import { bytesToHex } from "@noble/hashes/utils";
+import { bytesToHex } from "@noble/hashes/utils.js";
 import { ByteMap } from "./ByteMap";
 
 interface Step3EncodingProps {

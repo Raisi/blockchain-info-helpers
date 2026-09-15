@@ -11,7 +11,7 @@ import {
   bytesToHex,
   SECP256K1_PARAMS,
 } from "../crypto-utils";
-import { secp256k1 } from "@noble/curves/secp256k1";
+import { secp256k1 } from "@noble/curves/secp256k1.js";
 
 type Phase = "animating" | "done";
 
@@ -57,7 +57,7 @@ export default function KeyGeneration({
   const scalarPublicKey = (() => {
     try {
       const scalarBigInt = BigInt(scalar);
-      const point = secp256k1.ProjectivePoint.BASE.multiply(scalarBigInt).toAffine();
+      const point = secp256k1.Point.BASE.multiply(scalarBigInt).toAffine();
       return {
         x: point.x.toString(16).padStart(64, "0").slice(0, 8) + "…",
         y: point.y.toString(16).padStart(64, "0").slice(0, 8) + "…",
